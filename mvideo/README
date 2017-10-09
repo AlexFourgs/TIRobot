@@ -1,0 +1,14 @@
+README file for mvideo
+----------------------
+
+
+minimalist didactic tool for simple image processing.  Strongly
+inspired by gqcam, should work with : any cam (coclor/bw) on bbtv 
+and some logitec usbcam
+
+Usage :
+
+mvideo [-c /dev/yourvideodevice] [-s scale] [-f fps]
+
+Arnaud Patard 
+Pierre Andry

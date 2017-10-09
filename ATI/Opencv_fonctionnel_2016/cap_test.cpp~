@@ -1,0 +1,50 @@
+#include <opencv2/opencv.hpp>
+#include <iostream>
+#include <stdio.h>
+
+using namespace cv;
+
+int main(int, char**)
+{
+
+  int i,j;
+  Vec3f pixel;
+
+    VideoCapture cap(0); // open the default camera
+    if(!cap.isOpened())  // check if we succeeded
+        return -1;
+
+    Mat frame;
+    namedWindow("MyCam",1);
+  
+  
+    cap.set(CV_CAP_PROP_FRAME_WIDTH,320);  //taille de la fenetre
+    cap.set(CV_CAP_PROP_FRAME_HEIGHT,240); //au dela de 320*240, image qui lag
+
+
+MatIterator_<Vec3b> it, end;
+
+    while(1){
+           if(cap.read(frame)){// get a new frame from camera
+            
+
+	       
+            for( it = frame.begin<Vec3b>(), end = frame.end<Vec3b>(); it != end; ++it)
+            {
+	      (*it)[0] = /*accès au R */
+	      (*it) [1] =  /* le G */
+              (*it)[2] =  /* le B*/
+		
+            }
+
+	     
+	     
+
+	     imshow("MyCam", frame);
+	    
+        }
+        if(waitKey(30) >= 0) break;
+    }
+    // the camera will be deinitialized automatically in VideoCapture destructor
+    return 0;
+}

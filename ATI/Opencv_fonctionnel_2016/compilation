@@ -1,0 +1,3 @@
+g++ cap_test.cpp -o cap_test -lopencv_core -lopencv_highgui -lopencv_imgproc
+
+selon la version, rajouter : lopencv_videoio
