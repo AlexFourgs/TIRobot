@@ -103,9 +103,11 @@ void send_instruction(int taille_ecran_x, int taille_ecran_y, Serial_com* sc, in
 		//calcul de la commande à envoyer
 		if(delta_x > TOLERANCE_CENTRE){
 			angle_x = '+';
+			puts("+");
 		}
 		else if(delta_x < -TOLERANCE_CENTRE){
 			angle_x = '-';
+			puts("-");
 		}
 		else{
 			angle_x = '0';
@@ -113,9 +115,11 @@ void send_instruction(int taille_ecran_x, int taille_ecran_y, Serial_com* sc, in
 
 		if(delta_y > TOLERANCE_CENTRE){
 			angle_y = 'p';
+			puts("p");
 		}
 		else if(delta_y < -TOLERANCE_CENTRE){
 			angle_y = 'm';
+			puts("m");
 		}
 		else{
 			angle_y = 'n';

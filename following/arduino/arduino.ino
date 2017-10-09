@@ -3,8 +3,8 @@
 #define PAS 1
 
 
-Servo myservo;
-Servo myservo1;
+Servo servoPan;
+Servo servoTilt;
 
 int read;
 int posx;
@@ -24,15 +24,15 @@ void setup() {
 	posy=95;
 
 	/*************initialisation des servo_moteurs**********/
-	myservo.attach(5);//servo_moteur pan
-	myservo1.attach(6);//servo_moteur tilt
+	servoPan.attach(5);//servo_moteur pan
+	servoTilt.attach(6);//servo_moteur tilt
 
 	/************position initiale****************/
 
 
 
-	myservo.write(posx);
-	myservo1.write(posy);
+	servoPan.write(posx);
+	servoTilt.write(posy);
 
 	//  Serial.write("-80");
 	//Serial.write("-20");
@@ -82,14 +82,14 @@ void loop() {
 
 			if(datax[0] == 'm'){
 				//posy = posy +1;
-				incy=PAS;
+				incy=-PAS;
 				Serial.println("r");
 
 			}
 
 			else if(datax[0] == 'p'){
 				//posy = posy -1;
-				incy=-PAS;
+				incy=PAS;
 				Serial.println("r");
 
 			}
@@ -106,8 +106,8 @@ void loop() {
 		posy=posy+incy;
 	}
 
-	myservo1.write(posx);
-	myservo.write(posy);
+	servoTilt.write(posx);
+	servoPan.write(posy);
 
 	//delay(25);
 
