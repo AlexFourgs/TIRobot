@@ -99,6 +99,12 @@ Point matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y, i
 	return matching_point;
 }
 
+Match find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y, uchar** harris1, uchar** harris2, int size_window, int size_patch){
+
+	Match match;
+	return match;
+
+}
 /*int main() {
 	uchar img1[3][3];
 	img1[0][0]=0;

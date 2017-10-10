@@ -17,10 +17,16 @@ typedef struct Point{
 	int y;
 }Point;
 
+typedef struct Match{
+
+	Point pt1;
+	Point pt2;
+}Match;
+
 double cross_correlation(uchar** image_1, uchar** image_2, int size_x, int size_y, int ptx1, int ptx2, int pty1, int pty2, int size_patch);
 Point matching_point(uchar** image_1 , uchar** image_2, int size_x, int size_y, int ptx, int pty, uchar** harris2, int window_size, int size_patch);
 double euclidian_distance(uchar** image_1, uchar** image_2, int size_x, int size_y, int ptx1, int ptx2, int pty1, int pty2, int size_patch);
-
+Match find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y, uchar** harris1, uchar** harris2, int size_window, int size_patch);
 
 
 #endif
