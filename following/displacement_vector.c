@@ -99,9 +99,29 @@ Point matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y, i
 	return matching_point;
 }
 
+
 Match find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y, uchar** harris1, uchar** harris2, int size_window, int size_patch){
 
 	Match match;
+	Point pt1;
+	Point pt2;
+
+	int i;
+	int j;
+
+	for(j=0; j< size_y;j++){
+		for(i=0; i< size_x;i++){
+			if(harris1[i][j] ==255){
+				pt1.x = i;
+				pt1.y = j;
+
+				pt2 = matching_point(image_1, image_2, size_x, size_y, i,j, harris2, size_window, size_patch);
+				match.pt1 = pt1;
+				match.pt2 = pt2;
+			}
+		}
+	}
+
 	return match;
 
 }
