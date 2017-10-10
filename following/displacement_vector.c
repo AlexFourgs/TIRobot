@@ -1,5 +1,6 @@
 #include "displacement_vector.h"
 
+
 double cross_correlation(uchar** image_1, uchar** image_2, int size_x, int size_y, int ptx1, int ptx2, int pty1, int pty2, int size_patch){
 
 	int i;
