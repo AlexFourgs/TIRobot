@@ -9,8 +9,16 @@
 #include <cv.h>
 #include <pthread.h>
 
+
+
+typedef struct Point{
+
+	int x;
+	int y;
+}Point;
+
 double cross_correlation(uchar** image_1, uchar** image_2, int size_x, int size_y, int ptx1, int ptx2, int pty1, int pty2, int size_patch);
-int matching_point(uchar** image_1 , uchar** image_2, int size_x, int size_y, int ptx, int pty, uchar** harris2, int window_size, int size_patch);
+Point matching_point(uchar** image_1 , uchar** image_2, int size_x, int size_y, int ptx, int pty, uchar** harris2, int window_size, int size_patch);
 double euclidian_distance(uchar** image_1, uchar** image_2, int size_x, int size_y, int ptx1, int ptx2, int pty1, int pty2, int size_patch);
 
 

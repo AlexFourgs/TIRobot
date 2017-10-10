@@ -50,7 +50,7 @@ double euclidian_distance(uchar** image_1, uchar** image_2, int size_x, int size
   * match one point of image 1 with all corners of image 2
 */
 
-int matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y, int ptx, int pty, uchar** harris2, int window_size, int size_patch){
+Point matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y, int ptx, int pty, uchar** harris2, int window_size, int size_patch){
 
 	//browse all the harris points from the image 1 and compare with all harris point of image2
 
@@ -65,6 +65,11 @@ int matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y, int
 	double patch_distance = 0;
 	double patch_distance_prev = 100000000;
 
+	int ptx_nearest_patch;
+	int pty_nearest_patch;
+
+	Point matching_point;
+
 	for(j=pty - window_size /2; i< pty + window_size /2; j++){
 		for(i= ptx - window_size /2; i< ptx + window_size /2; i++){
 			if((j > 0) && (j< size_y)&&(i> 0)&&(i < size_x) && (harris2[i][j] == 255)){
@@ -78,13 +83,20 @@ int matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y, int
 
 				// method 2 : choose the minimum euclidian distance between patch
 				patch_distance = euclidian_distance(image_1, image_2, size_x, size_y, ptx, i, pty, j,size_patch);
-
+				if(patch_distance < patch_distance_prev){
+					patch_distance_prev = patch_distance;
+					ptx_nearest_patch = i;
+					pty_nearest_patch = j;
+				}
 			}
 		}
 	}
 
 	//keep the minimum value
-	return 0;
+	matching_point.x = ptx_nearest_patch;
+	matching_point.y = pty_nearest_patch;
+
+	return matching_point;
 }
 
 /*int main() {
