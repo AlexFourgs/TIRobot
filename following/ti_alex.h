@@ -10,4 +10,5 @@ uchar** greyscale_img(IplImage* img, int x, int y);
 
 int** grad(IplImage* image, int x, int y);
 
+
 #endif

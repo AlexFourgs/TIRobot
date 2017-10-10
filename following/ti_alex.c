@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "ti_alex.h"
+#include <time.h>
 
 /**
  *  @fn greyscale_pixel
@@ -41,19 +42,16 @@ uchar** greyscale_img(IplImage* img, int x, int y){
     return img_greyscale ;
 }
 
+
 int** grad(IplImage* image, int x, int y){
-    int sobel_vert[3][3] = {{-1, -2, -1}, {0, 0, 0}, {1, 2, 1}};
-    int sobel_hori[3][3] = {{-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1}};
-    int img_sobel_vert[x-2][y-2] ;
-    int img_sobel_hori[x-2][y-2] ;
+    //int img_sobel_vert[x-2][y-2] ;
+    //int img_sobel_hori[x-2][y-2] ;
     int** norme_grad ;
     uchar** img_greyscale ;
 
-    //
-    memset(img_sobel_hori, 0, sizeof(img_sobel_hori));
-    memset(img_sobel_vert, 0, sizeof(img_sobel_vert));
+    clock_t begin = clock();
 
-    norme_grad = (int**)calloc(x-2, sizeof(int*));
+    norme_grad = (int**)malloc((x-2)*sizeof(int*));
 
     img_greyscale = greyscale_img(image, x, y);
 
@@ -73,7 +71,7 @@ int** grad(IplImage* image, int x, int y){
 
     for(i = 1 ; i < x-1 ; i++){
 
-        norme_grad[i-1] = (int*)calloc(y-2, sizeof(int));
+        norme_grad[i-1] = (int*)malloc((y-2)*sizeof(int));
 
         for(j = 1 ; j < y-1 ; j++){
             pixel_1 = img_greyscale[i-1][j-1] ;
@@ -93,7 +91,7 @@ int** grad(IplImage* image, int x, int y){
                                + 2*pixel_8
                                + pixel_9;
 
-            img_sobel_vert[i-1][j-1] = pixel_sobel_vert ;
+            //img_sobel_vert[i-1][j-1] = pixel_sobel_vert ;
 
             // sobel horizontal
             pixel_sobel_hori = -pixel_1
@@ -103,12 +101,14 @@ int** grad(IplImage* image, int x, int y){
                                -pixel_7
                                + pixel_9;
 
-            img_sobel_hori[i-1][j-1] = pixel_sobel_hori ;
+            //img_sobel_hori[i-1][j-1] = pixel_sobel_hori ;
 
             norme_grad[i-1][j-1] = sqrt((pixel_sobel_hori*pixel_sobel_hori)+(pixel_sobel_vert*pixel_sobel_vert));
         }
     }
+    clock_t end = clock();
 
+    printf("%s : %f second(s) of execution.", __FUNCTION__, ((double)(end-begin)/CLOCKS_PER_SEC));
     return norme_grad ;
 
 }
