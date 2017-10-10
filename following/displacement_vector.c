@@ -1,6 +1,6 @@
 #include "displacement_vector.h"
 
-int** cross_correlation(int** image_1, int** image_2, int size_x, int size_y, int ptx1, int ptx2, int pty1, int pty2, int size_win_x, int size_win_y){
+int cross_correlation(int** image_1, int** image_2, int size_x, int size_y, int ptx1, int ptx2, int pty1, int pty2, int size_win_x, int size_win_y){
 
 	int i;
 	int j;
@@ -9,14 +9,20 @@ int** cross_correlation(int** image_1, int** image_2, int size_x, int size_y, in
 	int y;
 
 	//cross correlation
-	for(j=-size_win_y;j< size_win_y;j++){
-		for(i=-size_win_x;i< size_win_x;i++){
+	for(j=-size_win_y/2;j< size_win_y/2;j++){
+		for(i=-size_win_x/2;i< size_win_x /2;i++){
 			sum = sum + image_1[ptx1 + i][pty1 + j] * image_2[ptx2 + i][pty2 + j];
 		}
 	}
 
 
 
-	return NULL;
+	return sum;
 
+}
+
+int matching_point(int ** image_1, int** image_2, uchar** harris1, uchar** harris2){
+
+
+	return 0;
 }
