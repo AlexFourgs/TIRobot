@@ -1,6 +1,6 @@
 #include "displacement_vector.h"
 
-double cross_correlation(uchar** image_1, uchar** image_2, int size_x, int size_y, int ptx1, int ptx2, int pty1, int pty2, int size_win_x, int size_win_y){
+double cross_correlation(uchar** image_1, uchar** image_2, int size_x, int size_y, int ptx1, int ptx2, int pty1, int pty2, int size_patch){
 
 	int i;
 	int j;
@@ -9,8 +9,8 @@ double cross_correlation(uchar** image_1, uchar** image_2, int size_x, int size_
 	int y;
 
 	//cross correlation
-	for(j=-size_win_y/2;j< size_win_y/2;j++){
-		for(i=-size_win_x/2;i< size_win_x /2;i++){
+	for(j=-size_patch/2;j< size_patch/2;j++){
+		for(i=-size_patch/2;i< size_patch /2;i++){
 			sum = sum + image_1[ptx1 + i][pty1 + j] * image_2[ptx2 + i][pty2 + j];
 		}
 	}
@@ -25,7 +25,7 @@ double cross_correlation(uchar** image_1, uchar** image_2, int size_x, int size_
   * distance euclidienne
 */
 
-double euclidian_distance(uchar** image_1, uchar** image_2, int size_x, int size_y, int ptx1, int ptx2, int pty1, int pty2, int size_win_x, int size_win_y){
+double euclidian_distance(uchar** image_1, uchar** image_2, int size_x, int size_y, int ptx1, int ptx2, int pty1, int pty2, int size_patch){
 
         int i;
         int j;
@@ -34,8 +34,8 @@ double euclidian_distance(uchar** image_1, uchar** image_2, int size_x, int size
         int y;
 
         //cross correlation
-        for(j=-size_win_y/2;j< size_win_y/2;j++){
-                for(i=-size_win_x/2;i< size_win_x /2;i++){
+        for(j=-size_patch/2;j< size_patch/2;j++){
+                for(i=-size_patch/2;i< size_patch /2;i++){
                         sum = sum + pow(image_2[ptx1 + i][pty1 + j] - image_1[ptx2 + i][pty2 + j],2);
                 }
         }
@@ -50,7 +50,7 @@ double euclidian_distance(uchar** image_1, uchar** image_2, int size_x, int size
   * match one point of image 1 with all corners of image 2
 */
 
-int matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y, int ptx, int pty, uchar** harris2, int window_size){
+int matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y, int ptx, int pty, uchar** harris2, int window_size, int size_patch){
 
 	//browse all the harris points from the image 1 and compare with all harris point of image2
 
@@ -61,6 +61,9 @@ int matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y, int
 
 	int ptx_nearest;
 	int pty_nearest;
+
+	double patch_distance = 0;
+	double patch_distance_prev = 100000000;
 
 	for(j=pty - window_size /2; i< pty + window_size /2; j++){
 		for(i= ptx - window_size /2; i< ptx + window_size /2; i++){
@@ -74,6 +77,7 @@ int matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y, int
 				}
 
 				// method 2 : choose the minimum euclidian distance between patch
+				patch_distance = euclidian_distance(image_1, image_2, size_x, size_y, ptx, i, pty, j,size_patch);
 
 			}
 		}
