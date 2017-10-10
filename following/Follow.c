@@ -53,7 +53,7 @@ int write_s(Serial_com* sc, char *buffer, int nbyte){
 }
 
 int read_s(Serial_com* sc){
-	char* buffer = malloc(sizeof(char));
+	char* buffer = (char*) malloc(sizeof(char));
 	return read(sc->fd, buffer,1);
 }
 
@@ -94,7 +94,9 @@ void send_instruction(int taille_ecran_x, int taille_ecran_y, Serial_com* sc, in
 		delta_x = centre_x - x;
 		delta_y = centre_y - y;
 
+		// delta = distance entre barycentre et centre
 		delta = (sqrt((delta_x * delta_x) + (delta_y * delta_y)));
+		// deltaMax = distance max possible entre le barycentre et le centre
 		deltaMax = (sqrt((centre_x * centre_x) + (centre_y * centre_y)));
 
 		//printf("delta : %d\n", delta);
@@ -174,7 +176,7 @@ void reset(Serial_com* sc)
 {
 
 	//envoie de la commande au servo moteur
-	if(write_s(sc, "r", 1)!=-1){
+	if(write_s(sc, "r", 1) != -1){
 		#ifdef DEBUG
 		printf("signal envoyé : instruction pan\n");
 		#endif
@@ -232,13 +234,15 @@ void* launch_follow(void* info_void){
 	Info* info = (Info*) info_void;
 
 	Serial_com test;
+	/*
 	char name[] = "test.csv";
 	clock_t temps_start, temps;
 	double actu = 0;
-	int* tabWr = malloc(SIZE_MAX_CSV*sizeof(int));
-	int* tabWu = malloc(SIZE_MAX_CSV*sizeof(int));
+	int* tabWr = (int*) malloc(SIZE_MAX_CSV*sizeof(int));
+	int* tabWu = (int*) malloc(SIZE_MAX_CSV*sizeof(int));
 	int i;
 	int timerBegin = 0;
+	*/
 
 	if(open_s(&test, ACM)!=-1){
 		#ifdef DEBUG
@@ -247,7 +251,7 @@ void* launch_follow(void* info_void){
 	}
 
 	else{
-		printf("problème de connection\n");
+		printf("problème de connexion\n");
 		pthread_exit(NULL);
 	}
 
