@@ -5,12 +5,12 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include <highgui.h>
-#include <cv.h>
+#include <opencv/highgui.h>
+#include <opencv/cv.h>
 #include <pthread.h>
 
 #include "Information.h"
-#define CAMERA 0
+#define CAMERA 1
 
 // Etudier la couleur pour adapter la tolerence en fonction de R, G ou B.
 /*#define TOLERANCE_R 15
