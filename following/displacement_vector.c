@@ -33,9 +33,12 @@ double euclidian_distance(uchar** image_1, uchar** image_2, int size_x, int size
         int x;
         int y;
 
+	//let the value of patch size at constant value like 3 or check if the value is unpair
+
         //cross correlation
         for(j=-size_patch/2;j< size_patch/2;j++){
                 for(i=-size_patch/2;i< size_patch /2;i++){
+
                         sum = sum + pow(image_2[ptx1 + i][pty1 + j] - image_1[ptx2 + i][pty2 + j],2);
                 }
         }
@@ -50,12 +53,11 @@ double euclidian_distance(uchar** image_1, uchar** image_2, int size_x, int size
   * match one point of image 1 with all corners of image 2
 */
 
-Point matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y, int ptx, int pty, uchar** harris2, int window_size, int size_patch){
+Point matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y, int ptx, int pty, Point* harris2, int window_size, int size_patch){
 
 	//browse all the harris points from the image 1 and compare with all harris point of image2
 
 	int i;
-	int j;
 	double distance=0;
 	double distance_prev= 100000000;
 
@@ -65,29 +67,29 @@ Point matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y, i
 	double patch_distance = 0;
 	double patch_distance_prev = 100000000;
 
-	int ptx_nearest_patch;
-	int pty_nearest_patch;
+	int ptx_nearest_patch = 0;
+	int pty_nearest_patch = 0;
 
 	Point matching_point;
 
-	for(j=pty - window_size /2; i< pty + window_size /2; j++){
-		for(i= ptx - window_size /2; i< ptx + window_size /2; i++){
-			if((j > 0) && (j< size_y)&&(i> 0)&&(i < size_x) && (harris2[i][j] == 255)){
-				// method 1 : choose the minimum euclidian distance between points
-				distance = sqrt(pow(i - ptx, 2) + pow(j- pty, 2));
-				if(distance < distance_prev){
-					distance_prev = distance;
-					ptx_nearest = i;
-					pty_nearest = j;
-				}
+	for(i=0 ; i < sizeof(harris2); i++){
 
-				// method 2 : choose the minimum euclidian distance between patch
-				patch_distance = euclidian_distance(image_1, image_2, size_x, size_y, ptx, i, pty, j,size_patch);
-				if(patch_distance < patch_distance_prev){
-					patch_distance_prev = patch_distance;
-					ptx_nearest_patch = i;
-					pty_nearest_patch = j;
-				}
+		if((harris2[i].x > 0) && (harris2[i].x < size_x) && (harris2[i].y > 0) && (harris2[i].y < size_y) && (abs(harris2[i].x - ptx) < window_size/2) && (abs(harris2[i].y - pty) < window_size)){
+			// method 1 : choose the minimum euclidian distance between points
+			distance = sqrt(pow(harris2[i].x - ptx, 2) + pow(harris2[i].y- pty, 2));
+
+			if(distance < distance_prev){
+				distance_prev = distance;
+				ptx_nearest = harris2[i].x;
+				pty_nearest = harris2[i].y;
+			}
+
+			// method 2 : choose the minimum euclidian distance between patch
+			patch_distance = euclidian_distance(image_1, image_2, size_x, size_y, ptx, harris2[i].x, pty, harris2[i].y,size_patch);
+			if(patch_distance < patch_distance_prev){
+				patch_distance_prev = patch_distance;
+				ptx_nearest_patch = harris2[i].x;
+				pty_nearest_patch = harris2[i].y;
 			}
 		}
 	}
@@ -100,40 +102,27 @@ Point matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y, i
 }
 
 
-Match find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y, uchar** harris1, uchar** harris2, int size_window, int size_patch){
+Match find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y, Point* harris1, Point* harris2, int size_window, int size_patch){
 
 	Match match;
 	Point pt1;
 	Point pt2;
 
 	int i;
-	int j;
 
-	for(j=0; j< size_y;j++){
-		for(i=0; i< size_x;i++){
-			if(harris1[i][j] ==255){
-				pt1.x = i;
-				pt1.y = j;
+	for(i=0; i< sizeof(harris1);i++){
+		pt1.x = harris1[i].x;
+		pt1.y = harris1[i].y;
 
-				pt2 = matching_point(image_1, image_2, size_x, size_y, i,j, harris2, size_window, size_patch);
-				match.pt1 = pt1;
-				match.pt2 = pt2;
-			}
-		}
+		pt2 = matching_point(image_1, image_2, size_x, size_y, pt1.x,pt1.y, harris2, size_window, size_patch);
+
+		match.pt1 = pt1;
+		match.pt2 = pt2;
+
+		// compute distance x and y and add to the score table
+
 	}
 
 	return match;
 
 }
-/*int main() {
-	uchar img1[3][3];
-	img1[0][0]=0;
-	img1[0][1]=255;
-	img1[0][2]=0;
-	img1[1][0]=255;
-	img1[1][1]=255;
-	img1[1][2]=0;
-	img1[2][0]=255;
-	img1[2][1]=0;
-	img1[2][2]=255;
-}*/
