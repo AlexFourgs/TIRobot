@@ -41,40 +41,71 @@ uchar** greyscale_img(IplImage* img, int x, int y){
     return img_greyscale ;
 }
 
-uchar** grad(IplImage* image, int x, int y){
+int** grad(IplImage* image, int x, int y){
     int sobel_vert[3][3] = {{-1, -2, -1}, {0, 0, 0}, {1, 2, 1}};
     int sobel_hori[3][3] = {{-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1}};
     int img_sobel_vert[x-2][y-2] ;
     int img_sobel_hori[x-2][y-2] ;
-    uchar** norme_grad ;
+    int** norme_grad ;
     uchar** img_greyscale ;
 
     //
     memset(img_sobel_hori, 0, sizeof(img_sobel_hori));
     memset(img_sobel_vert, 0, sizeof(img_sobel_vert));
 
-    norme_grad = (uchar**)calloc(x-2, sizeof(char*));
+    norme_grad = (int**)calloc(x-2, sizeof(int*));
 
     img_greyscale = greyscale_img(image, x, y);
 
     int i, j ;
     int k, l ;
 
-    for(i = 1 ; i < x-1 ; i++){
-        for(j = 1 ; j < y-1 ; j++){
-            for(k = -1 ; k < 2 ; k++){
-                for(l = -1 ; l < 2 ; l++){
-                    img_sobel_vert[i-1][j-1] += sobel_vert[k+1][l+1]*img_greyscale[i+k][j+l];
-                    img_sobel_hori[i-1][j-1] += sobel_hori[k+1][l+1]*img_greyscale[i+k][j+l];
-                }
-            }
-        }
-    }
+    uchar pixel_1 ;
+    uchar pixel_2 ;
+    uchar pixel_3 ;
+    uchar pixel_4 ;
+    uchar pixel_6 ;
+    uchar pixel_7 ;
+    uchar pixel_8 ;
+    uchar pixel_9 ;
 
-    for(i = 0 ; i < x-2 ; i++){
-        norme_grad[i] = (uchar*)calloc(y-2, sizeof(uchar));
-        for(j = 0 ; j < y-2 ; j++){
-            norme_grad[i][j] = sqrt((img_sobel_hori[i][j]*img_sobel_hori[i][j])+(img_sobel_vert[i][j]*img_sobel_vert[i][j]));
+    int pixel_sobel_vert = 0, pixel_sobel_hori = 0 ;
+
+    for(i = 1 ; i < x-1 ; i++){
+
+        norme_grad[i-1] = (int*)calloc(y-2, sizeof(int));
+
+        for(j = 1 ; j < y-1 ; j++){
+            pixel_1 = img_greyscale[i-1][j-1] ;
+            pixel_2 = img_greyscale[i-1][j] ;
+            pixel_3 = img_greyscale[i-1][j+1] ;
+            pixel_4 = img_greyscale[i][j-1] ;
+            pixel_6 = img_greyscale[i][j+1] ;
+            pixel_7 = img_greyscale[i+1][j-1] ;
+            pixel_8 = img_greyscale[i+1][j] ;
+            pixel_9 = img_greyscale[i+1][j+1] ;
+
+            // sobel vertical
+            pixel_sobel_vert = -pixel_1
+                               -2*pixel_2
+                               -pixel_3
+                               + pixel_7
+                               + 2*pixel_8
+                               + pixel_9;
+
+            img_sobel_vert[i-1][j-1] = pixel_sobel_vert ;
+
+            // sobel horizontal
+            pixel_sobel_hori = -pixel_1
+                               + pixel_3
+                               -2*pixel_4
+                               + 2*pixel_6
+                               -pixel_7
+                               + pixel_9;
+
+            img_sobel_hori[i-1][j-1] = pixel_sobel_hori ;
+
+            norme_grad[i-1][j-1] = sqrt((pixel_sobel_hori*pixel_sobel_hori)+(pixel_sobel_vert*pixel_sobel_vert));
         }
     }
 
