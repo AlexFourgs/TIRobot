@@ -29,10 +29,10 @@ uchar greyscale_pixel(IplImage* pixel, int i, int j){
  */
 uchar** greyscale_img(IplImage* img, int x, int y){
     int i, j ;
-    uchar** img_greyscale = (uchar**)calloc(x, sizeof(char*));
+    uchar** img_greyscale = (uchar**)calloc(x, sizeof(uchar*));
 
     for(i = 0 ; i < x ; i++){
-        img_greyscale[i] = (uchar*)calloc(y, sizeof(char));
+        img_greyscale[i] = (uchar*)calloc(y, sizeof(uchar));
         for(j = 0 ; j < y ; j++){
             img_greyscale[i][j] = greyscale_pixel(img, i, j);
         }
@@ -46,12 +46,14 @@ uchar** grad(IplImage* image, int x, int y){
     int sobel_hori[3][3] = {{-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1}};
     int img_sobel_vert[x-2][y-2] ;
     int img_sobel_hori[x-2][y-2] ;
+    uchar** norme_grad ;
     uchar** img_greyscale ;
 
     //
     memset(img_sobel_hori, 0, sizeof(img_sobel_hori));
     memset(img_sobel_vert, 0, sizeof(img_sobel_vert));
 
+    norme_grad = (uchar**)calloc(x-2, sizeof(char*));
 
     img_greyscale = greyscale_img(image, x, y);
 
@@ -69,5 +71,13 @@ uchar** grad(IplImage* image, int x, int y){
         }
     }
 
+    for(i = 0 ; i < x-2 ; i++){
+        norme_grad[i] = (uchar*)calloc(y-2, sizeof(uchar));
+        for(j = 0 ; j < y-2 ; j++){
+            norme_grad[i][j] = sqrt((img_sobel_hori[i][j]*img_sobel_hori[i][j])+(img_sobel_vert[i][j]*img_sobel_vert[i][j]));
+        }
+    }
+
+    return norme_grad ;
 
 }
