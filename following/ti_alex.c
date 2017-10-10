@@ -43,15 +43,15 @@ uchar** greyscale_img(IplImage* img, int x, int y){
 }
 
 
-int** grad(IplImage* image, int x, int y){
-    //int img_sobel_vert[x-2][y-2] ;
-    //int img_sobel_hori[x-2][y-2] ;
+int** grad(IplImage* image, int x, int y, int** img_sobel_vert, int** img_sobel_hori){
     int** norme_grad ;
     uchar** img_greyscale ;
 
     clock_t begin = clock();
 
     norme_grad = (int**)malloc((x-2)*sizeof(int*));
+    img_sobel_hori = (int**)malloc((x-2)*sizeof(int*));
+    img_sobel_vert = (int**)malloc((x-2)*sizeof(int*));
 
     img_greyscale = greyscale_img(image, x, y);
 
@@ -71,6 +71,9 @@ int** grad(IplImage* image, int x, int y){
     for(i = 1 ; i < x-1 ; i++){
 
         norme_grad[i-1] = (int*)malloc((y-2)*sizeof(int));
+        img_sobel_hori[i-1] = (int*)malloc((y-2)*sizeof(int));
+        img_sobel_vert[i-1] = (int*)malloc((y-2)*sizeof(int));
+
 
         for(j = 1 ; j < y-1 ; j++){
             pixel_1 = img_greyscale[i-1][j-1] ;
