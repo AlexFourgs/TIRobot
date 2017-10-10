@@ -30,10 +30,10 @@ uchar greyscale_pixel(IplImage* pixel, int i, int j){
  */
 uchar** greyscale_img(IplImage* img, int x, int y){
     int i, j ;
-    uchar** img_greyscale = (uchar**)calloc(x, sizeof(uchar*));
+    uchar** img_greyscale = (uchar**)malloc(x*sizeof(uchar*));
 
     for(i = 0 ; i < x ; i++){
-        img_greyscale[i] = (uchar*)calloc(y, sizeof(uchar));
+        img_greyscale[i] = (uchar*)malloc(y*sizeof(uchar));
         for(j = 0 ; j < y ; j++){
             img_greyscale[i][j] = greyscale_pixel(img, i, j);
         }
@@ -56,7 +56,6 @@ int** grad(IplImage* image, int x, int y){
     img_greyscale = greyscale_img(image, x, y);
 
     int i, j ;
-    int k, l ;
 
     uchar pixel_1 ;
     uchar pixel_2 ;
