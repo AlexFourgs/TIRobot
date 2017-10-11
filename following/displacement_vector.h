@@ -111,7 +111,7 @@ double euclidian_distance(uchar** image_1, uchar** image_2, int size_x, int size
 */
 
 
-Match find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y, Point* harris1, Point* harris2, int size_window, int size_patch);
+Point find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y, Point* harris1, Point* harris2, int size_window, int size_patch);
 
 
 #endif
