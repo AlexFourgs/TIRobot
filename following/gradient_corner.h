@@ -16,6 +16,6 @@
 #include <cv.h>
 #include <pthread.h>
 
-
+int gradient_corner_detection(int** gradX, int** gradY,int size_x, int size_y, CvPoint** corners, int* corners_nb);
 
 #endif
