@@ -14,6 +14,9 @@
 #include "./Lib/nralloc.h"
 
 #include "Information.h"
+#include "ti_alex.h"
+#include "harris.h"
+
 #define CAMERA 0
 
 // Etudier la couleur pour adapter la tolerence en fonction de R, G ou B.
