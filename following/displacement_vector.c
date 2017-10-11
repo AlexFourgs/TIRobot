@@ -103,7 +103,7 @@ CvPoint matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y,
 }
 
 
-Point find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y, CvPoint* harris1, CvPoint* harris2, int size_window, int size_patch){
+Vector find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y, CvPoint* harris1, CvPoint* harris2, int size_window, int size_patch){
 
 	CvPoint pt1;
 	CvPoint pt2;
@@ -116,7 +116,7 @@ Point find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y,
 	int count_max = 0;
 	int count = 0;
 	int displacement_table[size_window][size_window];
-	Point point;
+	Vector vector;
 
 	for(i=0; i< sizeof(harris1);i++){
 		pt1.x = harris1[i].x;
@@ -140,9 +140,9 @@ Point find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y,
 
 	}
 
-	point.x = imax - 50;
-	point.y = ymax - 50;
+	vector.dx = imax - 50;
+	vector.dy = ymax - 50;
 
-	return point;
+	return vector;
 
 }
