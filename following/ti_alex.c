@@ -28,13 +28,13 @@ uchar greyscale_pixel(IplImage* pixel, int i, int j){
  *
  *  This function convert a colored IplImage into a char** greyscale image.
  */
-uchar** greyscale_img(IplImage* img, int x, int y){
+uchar** greyscale_img(IplImage* img, int nb_ligne, int nb_colonne){
     int i, j ;
-    uchar** img_greyscale = (uchar**)malloc(x*sizeof(uchar*));
+    uchar** img_greyscale = (uchar**)malloc(nb_ligne*sizeof(uchar*));
 
-    for(i = 0 ; i < x ; i++){
-        img_greyscale[i] = (uchar*)malloc(y*sizeof(uchar));
-        for(j = 0 ; j < y ; j++){
+    for(i = 0 ; i < nb_ligne ; i++){
+        img_greyscale[i] = (uchar*)malloc(nb_colonne*sizeof(uchar));
+        for(j = 0 ; j < nb_colonne ; j++){
             img_greyscale[i][j] = greyscale_pixel(img, i, j);
         }
     }
@@ -43,17 +43,17 @@ uchar** greyscale_img(IplImage* img, int x, int y){
 }
 
 
-int** grad(IplImage* image, int x, int y, int** img_sobel_vert, int** img_sobel_hori){
+int** grad(IplImage* image, int nb_ligne, int nb_colonne, int** img_sobel_vert, int** img_sobel_hori){
     int** norme_grad ;
     uchar** img_greyscale ;
 
     clock_t begin = clock();
 
-    norme_grad = (int**)malloc((x-2)*sizeof(int*));
-    img_sobel_hori = (int**)malloc((x-2)*sizeof(int*));
-    img_sobel_vert = (int**)malloc((x-2)*sizeof(int*));
+    norme_grad = (int**)malloc((nb_ligne-2)*sizeof(int*));
+    img_sobel_hori = (int**)malloc((nb_ligne-2)*sizeof(int*));
+    img_sobel_vert = (int**)malloc((nb_ligne-2)*sizeof(int*));
 
-    img_greyscale = greyscale_img(image, x, y);
+    img_greyscale = greyscale_img(image, nb_ligne, nb_colonne);
 
     int i, j ;
 
@@ -68,14 +68,14 @@ int** grad(IplImage* image, int x, int y, int** img_sobel_vert, int** img_sobel_
 
     int pixel_sobel_vert = 0, pixel_sobel_hori = 0 ;
 
-    for(i = 1 ; i < x-1 ; i++){
+    for(i = 1 ; i < nb_ligne-1 ; i++){
 
-        norme_grad[i-1] = (int*)malloc((y-2)*sizeof(int));
-        img_sobel_hori[i-1] = (int*)malloc((y-2)*sizeof(int));
-        img_sobel_vert[i-1] = (int*)malloc((y-2)*sizeof(int));
+        norme_grad[i-1] = (int*)malloc((nb_colonne-2)*sizeof(int));
+        img_sobel_hori[i-1] = (int*)malloc((nb_colonne-2)*sizeof(int));
+        img_sobel_vert[i-1] = (int*)malloc((nb_colonne-2)*sizeof(int));
 
 
-        for(j = 1 ; j < y-1 ; j++){
+        for(j = 1 ; j < nb_colonne-1 ; j++){
             pixel_1 = img_greyscale[i-1][j-1] ;
             pixel_2 = img_greyscale[i-1][j] ;
             pixel_3 = img_greyscale[i-1][j+1] ;
