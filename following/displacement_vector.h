@@ -20,7 +20,7 @@
  * \struct Point
  * \brief struct to contains the x_axis and the y_axis of a point
  * \var x x_axis
- * \var y y_axis 
+ * \var y y_axis
 */
 
 typedef struct Vector{
@@ -63,7 +63,7 @@ double cross_correlation(uchar** image_1, uchar** image_2, int size_x, int size_
 
 /**
  * \fn Point matching_point(uchar** image_1 , uchar** image_2, int size_x, int size_y, int ptx, int pty, Point* harris2, int window_size, int size_patch)
- * \brief This function score one corner of an image1 with all corners with an image2 
+ * \brief This function score one corner of an image1 with all corners with an image2
  * \param image_1 first image to compare
  * \param image_2 second image to compare
  * \param size_x size of the screen in x_axis

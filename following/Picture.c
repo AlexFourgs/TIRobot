@@ -164,11 +164,7 @@ void* launch_picture(void* info_void) {
 	// Ca marche, je sais pas trop pourquoi il faut inverser, mais bon
 	grad(cap, cap->height, cap->width, &img_sobel_vert, &img_sobel_hori);
 
-	for(j=0 ; j<cap->width-2 ; j++) {
-		printf("%d: %d\n", j, img_sobel_vert[0][j]);
-	}
-
-	int** h = harris(img_sobel_hori, img_sobel_vert, cap->width, cap->height, 0.5, &corners, &corners_nb);
+	int** h = harris(img_sobel_hori, img_sobel_vert, cap->width, cap->height, 0.22, 50000, &corners, &corners_nb);
 	// for(i=0 ; i<*info->sizeY-4 ; i++) {
 	// 	for(j=0 ; j<*info->sizeX-4 ; j++) {
 	// 		printf("%d ", h[i][j]);
@@ -178,9 +174,9 @@ void* launch_picture(void* info_void) {
 
 	printf("corners_nb=%d\n", corners_nb);
 	for(i=0 ; i<corners_nb ; i++) {
-		cvCircle(cap, corners[i], 5, CV_RGB(0,0,255), -1, 8, 0);
+		cvCircle(cap, corners[i], 1, CV_RGB(0,0,255), -1, 8, 0);
 	}
-	printf("%d\n", h[0][0]);
+	// printf("%d\n", h[0][0]);
 
 
 	cvShowImage(window_title, cap);

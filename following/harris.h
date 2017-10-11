@@ -8,6 +8,6 @@
 #include "ti_alex.h"
 #include "displacement_vector.h"
 
-int** harris(int** gradX, int** gradY, int x, int y, float lambda, CvPoint** corners, int* corners_nb);
+int** harris(int** gradX, int** gradY, int x, int y, float lambda, int threshold, CvPoint** corners, int* corners_nb);
 
 #endif
