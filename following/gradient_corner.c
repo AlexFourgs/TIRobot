@@ -10,10 +10,11 @@ int gradient_corner_detection(int** gradX, int** gradY,int size_x, int size_y, C
 	float conv_gradXX = 0, conv_gradYY = 0, conv_gradXY = 0, norm = 0, harris_pixel = 0;
 	float k;
 
-	*corners_nb = 0;
-
-	for(i = 2 ; i < size_y-2 ; i++) {
-        	for(j = 2 ; j < size_y-2 ; j++) {
+	//*corners_nb = 0;
+	printf("okok\n");
+	for(i = 2 ; i < size_x-3 ; i++) {
+        	for(j = 2 ; j < size_y-3 ; j++) {
+			//printf("in\n");
 			gradXX_1 = gradX[i-1][j-1] ;
 			gradXX_2 = gradX[i-1][j] ;
 	        	gradXX_3 = gradX[i-1][j+1] ;
