@@ -1,4 +1,5 @@
 #include "Picture.h"
+#include "ti_alex.h"
 
 void* waitSecond(void* end_void){
 	int* end = (int*) end_void;
@@ -99,12 +100,14 @@ void* launch_picture(void* info_void) {
 
 	// Déclaration des images
 	IplImage* cap ;
+	IplImage* grad ;
 
 	// Déclaration de l'élément de capture à partir de la webcam
 	CvCapture *capture ;
 
 	// Déclaration des différents noms de fenêtres
 	const char* window_title = "Original Camera" ;
+	const char* window_title_2 = "Gradient" ;
 	//const char* window_hsv = "Hsv Camera" ;
 
 	// On choisis la source pour l'image (webcam).
@@ -165,6 +168,8 @@ void* launch_picture(void* info_void) {
 		// Si on traite en BGR
 		color.cam = cap ;
 
+		//
+
 
 		// On parcours notre image (les pixels).
 		int widthMin = ((*info->sizeX/2) - ((*info->sizeX/2)/coefficient));
@@ -211,6 +216,7 @@ void* launch_picture(void* info_void) {
 
 		// On affiche la webcam normalement.
 		cvShowImage(window_title, cap);
+		cvShowImage(window_title_2, grad);
 		cvSetMouseCallback(window_title, mouseEvent, &color);
 
 		//On modifie si besoin le coefficient

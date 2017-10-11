@@ -8,9 +8,13 @@
 #include <opencv/highgui.h>
 #include <opencv/cv.h>
 #include <pthread.h>
+#include "./Lib/def.h"
+#include "./Lib/nrio.h"
+#include "./Lib/nrarith.h"
+#include "./Lib/nralloc.h"
 
 #include "Information.h"
-#define CAMERA 1
+#define CAMERA 0
 
 // Etudier la couleur pour adapter la tolerence en fonction de R, G ou B.
 /*#define TOLERANCE_R 15
