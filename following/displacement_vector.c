@@ -54,7 +54,7 @@ double euclidian_distance(uchar** image_1, uchar** image_2, int size_x, int size
   * match one point of image 1 with all corners of image 2
 */
 
-Point matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y, int ptx, int pty, Point* harris2, int window_size, int size_patch){
+CvPoint matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y, int ptx, int pty, CvPoint* harris2, int window_size, int size_patch){
 
 	//browse all the harris points from the image 1 and compare with all harris point of image2
 
@@ -71,7 +71,7 @@ Point matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y, i
 	int ptx_nearest_patch = 0;
 	int pty_nearest_patch = 0;
 
-	Point matching_point;
+	CvPoint matching_point;
 
 	for(i=0 ; i < sizeof(harris2); i++){
 
@@ -103,13 +103,20 @@ Point matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y, i
 }
 
 
-Match find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y, Point* harris1, Point* harris2, int size_window, int size_patch){
+Point find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y, CvPoint* harris1, CvPoint* harris2, int size_window, int size_patch){
 
-	Match match;
-	Point pt1;
-	Point pt2;
+	CvPoint pt1;
+	CvPoint pt2;
 
 	int i;
+	int dx;
+	int dy;
+	int imax = 0;
+	int ymax = 0;
+	int count_max = 0;
+	int count = 0;
+	int displacement_table[size_window][size_window];
+	Point point;
 
 	for(i=0; i< sizeof(harris1);i++){
 		pt1.x = harris1[i].x;
@@ -117,13 +124,25 @@ Match find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y,
 
 		pt2 = matching_point(image_1, image_2, size_x, size_y, pt1.x,pt1.y, harris2, size_window, size_patch);
 
-		match.pt1 = pt1;
-		match.pt2 = pt2;
-
 		// compute distance x and y and add to the score table
+		dx = pt2.x - pt1.x;
+		dy = pt2.y - pt2.y;
+
+		// fill accumulation table
+		displacement_table[dx + 50][dy + 50] ++;
+		count = displacement_table[dx + 50][dy + 50];
+		if(count > count_max){
+			imax = dx + 50;
+			ymax = dy + 50;
+			count_max = count;
+		}
+
 
 	}
 
-	return match;
+	point.x = imax - 50;
+	point.y = ymax - 50;
+
+	return point;
 
 }

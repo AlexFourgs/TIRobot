@@ -76,7 +76,7 @@ double cross_correlation(uchar** image_1, uchar** image_2, int size_x, int size_
  * \return the point in the second image which is matching more of each others with the point to compare
 */
 
-Point matching_point(uchar** image_1 , uchar** image_2, int size_x, int size_y, int ptx, int pty, Point* harris2, int window_size, int size_patch);
+CvPoint matching_point(uchar** image_1 , uchar** image_2, int size_x, int size_y, int ptx, int pty, CvPoint* harris2, int window_size, int size_patch);
 
 /**
  * \fn double euclidian_distance(uchar** image_1, uchar** image_2, int size_x, int size_y, int ptx1, int ptx2, int pty1, int pty2, int size_patch)
@@ -111,7 +111,7 @@ double euclidian_distance(uchar** image_1, uchar** image_2, int size_x, int size
 */
 
 
-Match find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y, Point* harris1, Point* harris2, int size_window, int size_patch);
+Point find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y, CvPoint* harris1, CvPoint* harris2, int size_window, int size_patch);
 
 
 #endif
