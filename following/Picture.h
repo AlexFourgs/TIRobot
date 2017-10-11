@@ -8,10 +8,10 @@
 #include <opencv/highgui.h>
 #include <opencv/cv.h>
 #include <pthread.h>
-#include "./Lib/def.h"
-#include "./Lib/nrio.h"
-#include "./Lib/nrarith.h"
-#include "./Lib/nralloc.h"
+//#include "./Lib/def.h"
+//#include "./Lib/nrio.h"
+//#include "./Lib/nrarith.h"
+//#include "./Lib/nralloc.h"
 
 #include "Information.h"
 #include "ti_alex.h"
