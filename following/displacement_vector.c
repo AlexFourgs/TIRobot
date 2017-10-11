@@ -54,7 +54,7 @@ double euclidian_distance(uchar** image_1, uchar** image_2, int size_x, int size
   * match one point of image 1 with all corners of image 2
 */
 
-Point matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y, int ptx, int pty, Point* harris2, int window_size, int size_patch){
+CvPoint matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y, int ptx, int pty, CvPoint* harris2, int window_size, int size_patch){
 
 	//browse all the harris points from the image 1 and compare with all harris point of image2
 
@@ -71,7 +71,7 @@ Point matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y, i
 	int ptx_nearest_patch = 0;
 	int pty_nearest_patch = 0;
 
-	Point matching_point;
+	CvPoint matching_point;
 
 	for(i=0 ; i < sizeof(harris2); i++){
 
@@ -103,10 +103,10 @@ Point matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y, i
 }
 
 
-Point find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y, Point* harris1, Point* harris2, int size_window, int size_patch){
+Point find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y, CvPoint* harris1, CvPoint* harris2, int size_window, int size_patch){
 
-	Point pt1;
-	Point pt2;
+	CvPoint pt1;
+	CvPoint pt2;
 
 	int i;
 	int dx;
