@@ -12,8 +12,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include <highgui.h>
-#include <cv.h>
+#include <opencv/highgui.h>
+#include <opencv/cv.h>
 #include <pthread.h>
 
 /**

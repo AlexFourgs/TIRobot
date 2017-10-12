@@ -150,36 +150,55 @@ void* launch_picture(void* info_void) {
 	// Tant qu'on appuie pas sur q le on continu la boucle.
 	key = cvWaitKey(1);
 
-	cap = cvQueryFrame(capture);
+	int** norme_grad = (int**)malloc((cap->height-2)*sizeof(int*));
 	// Gradient sur Y, montre les lignes horizontales
-	int** img_sobel_vert = NULL;
+	int** img_sobel_vert = (int**)malloc((cap->height-2)*sizeof(int*));
 	// Gradient sur X, montre les lignes verticales
-	int** img_sobel_hori = NULL;
+	int** img_sobel_hori = (int**)malloc((cap->height-2)*sizeof(int*));
+	int** h = (int**)malloc((cap->height-4)*sizeof(int*));
 
-	CvPoint* corners = malloc((*info->sizeX) * (*info->sizeY) * sizeof(CvPoint));
-	int corners_nb = 0;
-
-	// TODO: optimiser img_sobel pour pas malloc à chaque fois
-
-	// Ca marche, je sais pas trop pourquoi il faut inverser, mais bon
-	grad(cap, cap->height, cap->width, &img_sobel_vert, &img_sobel_hori);
-
-	int** h = harris(img_sobel_hori, img_sobel_vert, cap->width, cap->height, 0.22, 50000, &corners, &corners_nb);
-	// for(i=0 ; i<*info->sizeY-4 ; i++) {
-	// 	for(j=0 ; j<*info->sizeX-4 ; j++) {
-	// 		printf("%d ", h[i][j]);
-	// 	}
-	// 	puts("");
-	// }
-
-	printf("corners_nb=%d\n", corners_nb);
-	for(i=0 ; i<corners_nb ; i++) {
-		cvCircle(cap, corners[i], 1, CV_RGB(0,0,255), -1, 8, 0);
+    for(i = 0 ; i < cap->height-4 ; i++) {
+		norme_grad[i] = (int*)malloc((cap->width-2)*sizeof(int));
+        img_sobel_vert[i] = (int*)malloc((cap->width-2)*sizeof(int));
+        img_sobel_hori[i] = (int*)malloc((cap->width-2)*sizeof(int));
+		h[i] = (int*)malloc((cap->width-4)*sizeof(int));
 	}
-	// printf("%d\n", h[0][0]);
+	for(i = cap->height-4 ; i < cap->height-2 ; i++) {
+		norme_grad[i] = (int*)malloc((cap->width-2)*sizeof(int));
+        img_sobel_vert[i] = (int*)malloc((cap->width-2)*sizeof(int));
+        img_sobel_hori[i] = (int*)malloc((cap->width-2)*sizeof(int));
+	}
 
+	CvPoint* corners = (CvPoint*) malloc(cap->height * cap->width * sizeof(CvPoint));;
+	int corners_nb;
 
-	cvShowImage(window_title, cap);
+	int harris_threshold = 500000, harris_lambda = 230;
+	int lambda_divider = 1000;
+
+	cvCreateTrackbar("Seuil Harris", "Original Camera", &harris_threshold, 2000000, NULL);
+	cvCreateTrackbar("Lambda Harris", "Original Camera", &harris_lambda, 250, NULL);
+
+	while ((key != 'q') && (key != 'Q') && (*info->isEnd == 0)){
+		nbImage++ ;
+		corners_nb = 0;
+
+		cap = cvQueryFrame(capture);
+
+		// TODO: optimiser img_sobel pour pas malloc à chaque fois
+
+		// Ca marche, je sais pas trop pourquoi il faut inverser, mais bon
+		grad(cap, cap->height, cap->width, &norme_grad, &img_sobel_vert, &img_sobel_hori);
+
+		harris(img_sobel_hori, img_sobel_vert, cap->width, cap->height, (float) harris_lambda/lambda_divider, harris_threshold, &corners, &corners_nb, &h);
+
+		// printf("corners_nb=%d\n", corners_nb);
+		for(i=0 ; i<corners_nb ; i++) {
+			cvCircle(cap, corners[i], 1, CV_RGB(0,0,255), -1, 8, 0);
+		}
+
+		cvShowImage(window_title, cap);
+		key = cvWaitKey(1);
+	}
 
 	/* Tracking rouge
 	while ((key != 'q') && (key != 'Q') && (*info->isEnd == 0)){
@@ -296,8 +315,29 @@ void* launch_picture(void* info_void) {
 
 	//printf("Pour 10 secondes, on a traité %d images.\n", (int)nbImage);
 
+
+    for(i = 0 ; i < cap->height-4 ; i++) {
+		free(norme_grad[i]);
+		free(img_sobel_vert[i]);
+		free(img_sobel_hori[i]);
+		free(h[i]);
+	}
+
+	for(i = cap->height-4 ; i < cap->height-2 ; i++) {
+		free(norme_grad[i]);
+		free(img_sobel_vert[i]);
+		free(img_sobel_hori[i]);
+		free(h[i]);
+	}
+
+	free(norme_grad);
+	free(img_sobel_vert);
+	free(img_sobel_hori);
+	free(h);
+	free(corners);
+
 	cvReleaseCapture(&capture);
-	cvWaitKey(0);
+	// cvWaitKey(0);
 	cvDestroyWindow(window_title);
 
 	*info->isEnd = 1;

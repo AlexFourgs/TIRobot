@@ -13,7 +13,7 @@
 uchar greyscale_pixel(IplImage* pixel, int i, int j);
 uchar** greyscale_img(IplImage* img, int x, int y);
 
-int** grad(IplImage* image, int x, int y, int*** img_sobel_vert, int*** img_sobel_hori);
+void grad(IplImage* image, int nb_ligne, int nb_colonne, int*** norme_grad, int*** img_sobel_vert, int*** img_sobel_hori);
 
 
 #endif
