@@ -18,7 +18,7 @@ int** harris(int** gradX, int** gradY, int x, int y, float lambda, CvPoint** cor
         harris[i-1] = (int*) calloc(x-4, sizeof(int));
         for(j = 1 ; j < x-3 ; j++) {
             if(i == 1) {
-                printf("%d: %d\n", j, gradX[i][j]);
+                // printf("%d: %d\n", j, gradX[i][j]);
             }
             gradXX_1 = gradX[i-1][j-1] ;
             gradXX_2 = gradX[i-1][j] ;

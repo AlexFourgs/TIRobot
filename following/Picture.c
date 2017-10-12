@@ -162,14 +162,13 @@ void* launch_picture(void* info_void) {
 	// TODO: optimiser img_sobel pour pas malloc à chaque fois
 
 	// Ca marche, je sais pas trop pourquoi il faut inverser, mais bon
-	grad(cap, *info->sizeX, *info->sizeY, &img_sobel_vert, &img_sobel_hori);
+	grad(cap, cap->height, cap->width, &img_sobel_vert, &img_sobel_hori);
 
-	for(j=0 ; j<*info->sizeX-4 ; j++) {
-		printf("%d ", img_sobel_vert[0][j]);
+	for(j=0 ; j<cap->width-2 ; j++) {
+		printf("%d: %d\n", j, img_sobel_vert[0][j]);
 	}
-	puts("");
 
-	int** h = harris(img_sobel_hori, img_sobel_vert, *info->sizeX, *info->sizeY, 0.5, &corners, &corners_nb);
+	int** h = harris(img_sobel_hori, img_sobel_vert, cap->width, cap->height, 0.5, &corners, &corners_nb);
 	// for(i=0 ; i<*info->sizeY-4 ; i++) {
 	// 	for(j=0 ; j<*info->sizeX-4 ; j++) {
 	// 		printf("%d ", h[i][j]);

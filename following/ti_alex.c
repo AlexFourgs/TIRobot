@@ -35,7 +35,7 @@ uchar** greyscale_img(IplImage* img, int nb_ligne, int nb_colonne){
     for(i = 0 ; i < nb_ligne ; i++){
         img_greyscale[i] = (uchar*)malloc(nb_colonne*sizeof(uchar));
         for(j = 0 ; j < nb_colonne ; j++){
-            img_greyscale[i][j] = greyscale_pixel(img, i, j);
+            img_greyscale[i][j] = greyscale_pixel(img, j, i);
         }
     }
 
@@ -63,14 +63,14 @@ int** grad(IplImage* image, int nb_ligne, int nb_colonne, int*** img_sobel_vert,
 
     int i, j ;
 
-    uchar pixel_1 ;
-    uchar pixel_2 ;
-    uchar pixel_3 ;
-    uchar pixel_4 ;
-    uchar pixel_6 ;
-    uchar pixel_7 ;
-    uchar pixel_8 ;
-    uchar pixel_9 ;
+    int pixel_1 = 0;
+    int pixel_2 = 0;
+    int pixel_3 = 0;
+    int pixel_4 = 0;
+    int pixel_6 = 0;
+    int pixel_7 = 0;
+    int pixel_8 = 0;
+    int pixel_9 = 0;
 
     int pixel_sobel_vert = 0, pixel_sobel_hori = 0 ;
 
@@ -116,6 +116,8 @@ int** grad(IplImage* image, int nb_ligne, int nb_colonne, int*** img_sobel_vert,
     // clock_t end = clock();
 
     // printf("%s : %f second(s) of execution.\n", __FUNCTION__, ((double)(end-begin)/CLOCKS_PER_SEC));
+
+    puts("");
 
     return norme_grad ;
 
