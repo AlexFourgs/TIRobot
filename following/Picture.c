@@ -76,8 +76,7 @@ Barycenter barycenterCalculation (int *barycenter_x, int *barycenter_y, int size
 
 void* launch_picture(void* info_void) {
 	Info* info = (Info*) info_void;
-	CvPoint center;
-
+	CvPoint* center = malloc(sizeof(CvPoint));
 	//coefficient
 	int coefficient = 1;
 	int isVisible = 0;
@@ -100,6 +99,8 @@ void* launch_picture(void* info_void) {
 
 	// Déclaration des images
 	IplImage* cap ;
+	IplImage* prev_cap;
+
 	// IplImage* grad ;
 
 	// Déclaration de l'élément de capture à partir de la webcam
@@ -129,12 +130,15 @@ void* launch_picture(void* info_void) {
 
 	// On alloue la mémoire pour nos tableaux de calcul du barycentre
 	cap = cvQueryFrame(capture);
+        prev_cap = cvQueryFrame(capture);
+
 	int sizeXCam = cap->width;
 	int sizeYCam = cap->height;
 	info->sizeX = &sizeXCam;
 	info->sizeY = &sizeYCam;
-	center.x = *info->sizeX/2;
-	center.y = *info->sizeY/2;
+
+	//center->x = *info->sizeX/2;
+	//center->y = *info->sizeY/2;
 
 	int inSmallMinX = ((*info->sizeX/2) - ((*info->sizeX/2)/COEFFICIENT_MAX));
 	int inSmallMaxX = ((*info->sizeX/2) + ((*info->sizeX/2)/COEFFICIENT_MAX));
@@ -170,6 +174,9 @@ void* launch_picture(void* info_void) {
 	}
 
 	CvPoint* corners = (CvPoint*) malloc(cap->height * cap->width * sizeof(CvPoint));;
+	CvPoint* corners1 = (CvPoint*) malloc(prev_cap->height * prev_cap->width * sizeof(CvPoint));;
+
+
 	int corners_nb;
 
 	int harris_threshold = 500000, harris_lambda = 230;
@@ -178,25 +185,68 @@ void* launch_picture(void* info_void) {
 	cvCreateTrackbar("Seuil Harris", "Original Camera", &harris_threshold, 2000000, NULL);
 	cvCreateTrackbar("Lambda Harris", "Original Camera", &harris_lambda, 250, NULL);
 
+	nbImage++ ;
+        corners_nb = 0;
+	int corners_nb1 = 0;
+	Vector vector;
+	uchar** image1_gr;
+	uchar** image2_gr;
+
+        prev_cap = cvQueryFrame(capture);
+	Match* matches = malloc(500*sizeof(Match));
+
+        // TODO: optimiser img_sobel pour pas malloc à chaque fois
+	// Ca marche, je sais pas trop pourquoi il faut inverser, mais bon
+	grad(prev_cap, prev_cap->height, prev_cap->width, &norme_grad, &img_sobel_vert, &img_sobel_hori);
+
+        harris(img_sobel_hori, img_sobel_vert, prev_cap->width, prev_cap->height, (float) harris_lambda/lambda_divider, harris_threshold, &corners1, &corners_nb1, &h);
+
+
+        // printf("corners_nb=%d\n", corners_nb);
+        for(i=0 ; i<corners_nb1 ; i++) {
+        	cvCircle(prev_cap, corners1[i], 1, CV_RGB(0,0,255), -1, 8, 0);
+        }
+	//CvPoint* center;
+	CvPoint* vectors = malloc(sizeof(CvPoint));
+	CvSize size= {2,2};
 	while ((key != 'q') && (key != 'Q') && (*info->isEnd == 0)){
 		nbImage++ ;
 		corners_nb = 0;
 
 		cap = cvQueryFrame(capture);
-
 		// TODO: optimiser img_sobel pour pas malloc à chaque fois
 
 		// Ca marche, je sais pas trop pourquoi il faut inverser, mais bon
 		grad(cap, cap->height, cap->width, &norme_grad, &img_sobel_vert, &img_sobel_hori);
-
 		harris(img_sobel_hori, img_sobel_vert, cap->width, cap->height, (float) harris_lambda/lambda_divider, harris_threshold, &corners, &corners_nb, &h);
-
 		// printf("corners_nb=%d\n", corners_nb);
 		for(i=0 ; i<corners_nb ; i++) {
 			cvCircle(cap, corners[i], 1, CV_RGB(0,0,255), -1, 8, 0);
 		}
 
+		//calcul le vecteur deplcement
+		image1_gr = greyscale_img(prev_cap, prev_cap->height, prev_cap->width);
+                image2_gr = greyscale_img(cap, cap->height, cap->width);
+
+		//printf("plplpl\n");
+		vector = find_all_matches(image1_gr, image2_gr,cap->height, cap->width, corners1, corners,50,3,matches, corners_nb1, corners_nb);
+		if(vector.dx != 0){
+		printf("dx = %d\n",vector.dx);
+		printf("dy = %d\n",vector.dy);
+		}
+		center->x = prev_cap->height/2;
+		center->y = prev_cap->width/2;
+
+		vectors->x = center->x + vector.dx;
+		vectors->y = center->y + vector.dy;
+
+		cvLine(cap, *center, *vectors,cvScalar(200,200,0,20),6,8,0);
 		cvShowImage(window_title, cap);
+		//printf("la\n");
+		prev_cap = cvCloneImage(cap);
+		//printf("clone\n");
+		memcpy(corners1, corners,cap->height * cap->width);
+		corners_nb1 = corners_nb;
 		key = cvWaitKey(1);
 	}
 
