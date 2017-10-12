@@ -23,11 +23,11 @@
  * \var y y_axis 
 */
 
-typedef struct Point{
+typedef struct Vector{
 
-	int x;
-	int y;
-}Point;
+	int dx;
+	int dy;
+}Vector;
 
 /**
  * \struct Match
@@ -38,8 +38,8 @@ typedef struct Point{
 
 typedef struct Match{
 
-	Point pt1;
-	Point pt2;
+	CvPoint pt1;
+	CvPoint pt2;
 }Match;
 
 
@@ -111,7 +111,7 @@ double euclidian_distance(uchar** image_1, uchar** image_2, int size_x, int size
 */
 
 
-Point find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y, CvPoint* harris1, CvPoint* harris2, int size_window, int size_patch);
+Vector find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y, CvPoint* harris1, CvPoint* harris2, int size_window, int size_patch);
 
 
 #endif
