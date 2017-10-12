@@ -54,7 +54,7 @@ double euclidian_distance(uchar** image_1, uchar** image_2, int size_x, int size
   * match one point of image 1 with all corners of image 2
 */
 
-CvPoint matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y, int ptx, int pty, CvPoint* harris2, int window_size, int size_patch){
+CvPoint matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y, int ptx, int pty, CvPoint* harris2, int window_size, int size_patch, int nbPoints){
 
 	//browse all the harris points from the image 1 and compare with all harris point of image2
 
@@ -73,9 +73,9 @@ CvPoint matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y,
 
 	CvPoint matching_point;
 
-	for(i=0 ; i < sizeof(harris2); i++){
+	for(i=0 ; i < sizeof(nbPoints); i++){
 
-		if((harris2[i].x > 0) && (harris2[i].x < size_x) && (harris2[i].y > 0) && (harris2[i].y < size_y) && (abs(harris2[i].x - ptx) < window_size/2) && (abs(harris2[i].y - pty) < window_size)){
+		if((harris2[i].x > 0) && (harris2[i].x < size_x) && (harris2[i].y > 0) && (harris2[i].y < size_y) && (abs(harris2[i].x - ptx) < window_size/2) && (abs(harris2[i].y - pty) < window_size/2)){
 			// method 1 : choose the minimum euclidian distance between points
 			distance = sqrt(pow(harris2[i].x - ptx, 2) + pow(harris2[i].y- pty, 2));
 
@@ -103,7 +103,7 @@ CvPoint matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y,
 }
 
 
-Vector find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y, CvPoint* harris1, CvPoint* harris2, int size_window, int size_patch, Match* matches){
+Vector find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y, CvPoint* harris1, CvPoint* harris2, int size_window, int size_patch, Match* matches, int nbPoints1, int nbPoints2){
 
 	CvPoint pt1;
 	CvPoint pt2;
@@ -120,11 +120,11 @@ Vector find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y
 	int displacement_table[size_window][size_window];
 	Vector vector;
 
-	for(i=0; i< sizeof(harris1);i++){
+	for(i=0; i< nbPoints1;i++){
 		pt1.x = harris1[i].x;
 		pt1.y = harris1[i].y;
 
-		pt2 = matching_point(image_1, image_2, size_x, size_y, pt1.x,pt1.y, harris2, size_window, size_patch);
+		pt2 = matching_point(image_1, image_2, size_x, size_y, pt1.x,pt1.y, harris2, size_window, size_patch, nbPoints2);
 
 		// compute distance x and y and add to the score table
 		dx = pt2.x - pt1.x;
