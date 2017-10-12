@@ -16,8 +16,6 @@ double cross_correlation(uchar** image_1, uchar** image_2, int size_x, int size_
 		}
 	}
 
-
-
 	return sum;
 
 }
@@ -34,8 +32,6 @@ double euclidian_distance(uchar** image_1, uchar** image_2, int size_x, int size
         int x;
         int y;
 
-	//let the value of patch size at constant value like 3 or check if the value is unpair
-
         //cross correlation
         for(j=-size_patch/2;j<= size_patch/2;j++){
                 for(i=-size_patch/2;i<= size_patch /2;i++){
@@ -43,8 +39,6 @@ double euclidian_distance(uchar** image_1, uchar** image_2, int size_x, int size
                         sum = sum + pow(image_1[ptx1 + j][pty1 + i] - image_2[ptx2 + j][pty2 + i],2);
                 }
         }
-
-
 
         return sqrt(sum);
 
@@ -68,8 +62,8 @@ CvPoint matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y,
 	double patch_distance = 0;
 	double patch_distance_prev = 100000000;
 
-	int ptx_nearest_patch = ptx;
-	int pty_nearest_patch = pty;
+	int ptx_nearest_patch = 51;
+	int pty_nearest_patch = 51;
 
 	CvPoint matching_point;
 
@@ -78,10 +72,9 @@ CvPoint matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y,
 		if((harris2[i].x > 3) && (harris2[i].x < size_x-3) && (harris2[i].y > 3) && (harris2[i].y < size_y-3) && (abs(harris2[i].y - pty) < window_size/2) && (abs(harris2[i].x - ptx) < window_size/2)){
 			// method 1 : choose the minimum euclidian distance between points
 			distance = sqrt(pow(harris2[i].y - pty, 2) + pow(harris2[i].x- ptx, 2));
-			//printf("distance = %d \n", abs(harris2[i].x - ptx));
+
 			if(distance < distance_prev){
 				distance_prev = distance;
-	//			printf("distance = %f\n", distance);
 				ptx_nearest = harris2[i].x;
 				pty_nearest = harris2[i].y;
 			}
@@ -97,8 +90,8 @@ CvPoint matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y,
 	}
 
 	//keep the minimum value
-	matching_point.x = ptx_nearest;
-	matching_point.y = pty_nearest;
+	matching_point.x = ptx_nearest_patch;
+	matching_point.y = pty_nearest_patch;
 
 	return matching_point;
 }
@@ -114,53 +107,47 @@ Vector find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y
 	int i;
 	int dx=0;
 	int dy=0;
-	int imax = 0;
-	int ymax = 0;
+	int imax = 25;
+	int ymax = 25;
 	int count_max = 0;
 	int count = 0;
-	int displacement_table[size_window][size_window];
 
+	int** displacement_table ;
+	displacement_table= (int**)calloc(size_window,sizeof(int*));
 	int u,v;
 
 	for(v=0;v<size_window;v++){
-		for(u=0;u<size_window;u++){
-			displacement_table[u][v] = 0;
-		}
+		displacement_table[v] = (int*)calloc(size_window,sizeof(int**));
 	}
 
 	for(i=0; i< nbPoints1;i++){
 		pt1.x = harris1[i].x;
 		pt1.y = harris1[i].y;
-		//printf("count\n");
-		//printf("mamama\n");
 		pt2 = matching_point(image_1, image_2, size_x, size_y, pt1.x,pt1.y, harris2, size_window, size_patch, nbPoints2);
-		//printf("ount\n");
 
-		//printf("match\n");
 		// compute distance x and y and add to the score table
-		dx = pt2.x - pt1.x;
-		dy = pt2.y - pt1.y;
-		printf(" dx : %d %d\n",dx, dy);
-		//matches[i].pt1 = pt1;
-		//matches[i].pt2 = pt2;
+		if((pt2.x!=51)&&(pt2.y)){
+			dx = pt2.x - pt1.x;
+			dy = pt2.y - pt1.y;
 
 		// fill accumulation table
-		displacement_table[dx + 25][dy + 25] = displacement_table[dx+25][dy+25] + 1;
-		//printf("displ %d\n",dx);
-		count = displacement_table[dx + 25][dy + 25];
-		if(count > count_max){
-			//printf("pl\n");
-			imax = dx + 25;
-			ymax = dy + 25;
-			count_max = count;
-			//printf("imax%d\n",imax);
+			displacement_table[dx + 25][dy + 25] = displacement_table[dx+25][dy+25] + 1;
+			count = displacement_table[dx + 25][dy + 25];
+			if(count > count_max){
+				imax = dx + 25;
+				ymax = dy + 25;
+				count_max = count;
+			}
 		}
-
 
 	}
 
+	for(v=0;v<size_window;v++){
+		free(displacement_table[v]);
+	}
+
+	free(displacement_table);
 	Vector vector = {imax-25, ymax -25};
-	//printf("imax = %d\n", imax);
 	vector.dx = imax - 25;
 	vector.dy = ymax - 25;
 

@@ -43,7 +43,7 @@ int colorTracking (IplImage* cap, Color_pixel color, int i, uchar pixel_blue, uc
 Barycenter barycenterCalculation (int *barycenter_x, int *barycenter_y, int size_x, int size_y, int coefficient, int* isVisible) {
 	Barycenter coordonnees ;
 	coordonnees.x = coordonnees.y = 0 ;
-	//int value_max = 0 ;
+
 	int i;
 	int nombre_x = 0 ;
 	int nombre_y = 0 ;
@@ -101,15 +101,12 @@ void* launch_picture(void* info_void) {
 	IplImage* cap ;
 	IplImage* prev_cap;
 
-	// IplImage* grad ;
-
 	// Déclaration de l'élément de capture à partir de la webcam
 	CvCapture *capture ;
 
 	// Déclaration des différents noms de fenêtres
 	const char* window_title = "Original Camera" ;
 	const char* window_title_2 = "Gradient" ;
-	//const char* window_hsv = "Hsv Camera" ;
 
 	// On choisis la source pour l'image (webcam).
 	capture = cvCreateCameraCapture (CAMERA);
@@ -123,6 +120,7 @@ void* launch_picture(void* info_void) {
 
 	// Création de la fenêtre.
 	cvNamedWindow (window_title, CV_WINDOW_AUTOSIZE);
+        cvNamedWindow ("win2", CV_WINDOW_AUTOSIZE);
 
 	uchar pixel_blue ;
 	uchar pixel_green ;
@@ -161,16 +159,17 @@ void* launch_picture(void* info_void) {
 	int** img_sobel_hori = (int**)malloc((cap->height-2)*sizeof(int*));
 	int** h = (int**)malloc((cap->height-4)*sizeof(int*));
 
-    for(i = 0 ; i < cap->height-4 ; i++) {
+	for(i = 0 ; i < cap->height-4 ; i++) {
 		norme_grad[i] = (int*)malloc((cap->width-2)*sizeof(int));
-        img_sobel_vert[i] = (int*)malloc((cap->width-2)*sizeof(int));
-        img_sobel_hori[i] = (int*)malloc((cap->width-2)*sizeof(int));
+        	img_sobel_vert[i] = (int*)malloc((cap->width-2)*sizeof(int));
+        	img_sobel_hori[i] = (int*)malloc((cap->width-2)*sizeof(int));
 		h[i] = (int*)malloc((cap->width-4)*sizeof(int));
 	}
+
 	for(i = cap->height-4 ; i < cap->height-2 ; i++) {
 		norme_grad[i] = (int*)malloc((cap->width-2)*sizeof(int));
-        img_sobel_vert[i] = (int*)malloc((cap->width-2)*sizeof(int));
-        img_sobel_hori[i] = (int*)malloc((cap->width-2)*sizeof(int));
+        	img_sobel_vert[i] = (int*)malloc((cap->width-2)*sizeof(int));
+        	img_sobel_hori[i] = (int*)malloc((cap->width-2)*sizeof(int));
 	}
 
 	CvPoint* corners = (CvPoint*) malloc(cap->height * cap->width * sizeof(CvPoint));;
@@ -199,18 +198,21 @@ void* launch_picture(void* info_void) {
 	// Ca marche, je sais pas trop pourquoi il faut inverser, mais bon
 	grad(prev_cap, prev_cap->height, prev_cap->width, &norme_grad, &img_sobel_vert, &img_sobel_hori);
 
-        harris(img_sobel_hori, img_sobel_vert, prev_cap->width, prev_cap->height, (float) harris_lambda/lambda_divider, harris_threshold, &corners1, &corners_nb1, &h);
+        //gradient_corner_detection(img_sobel_hori, img_sobel_vert, prev_cap->width, prev_cap->height, (float) harris_lambda/lambda_divider, harris_threshold, &corners1, &corners_nb1, &h);
+	harris(img_sobel_hori, img_sobel_vert, cap->width, cap->height, (float) harris_lambda/lambda_divider,harris_threshold, &corners, &corners_nb, &h);
+
 
 
         // printf("corners_nb=%d\n", corners_nb);
         for(i=0 ; i<corners_nb1 ; i++) {
         	cvCircle(prev_cap, corners1[i], 1, CV_RGB(0,0,255), -1, 8, 0);
         }
+
 	//CvPoint* center;
 	CvPoint* vectors = malloc(sizeof(CvPoint));
 	CvSize size= {2,2};
 	while ((key != 'q') && (key != 'Q') && (*info->isEnd == 0)){
-		nbImage++ ;
+		//nbImage++ ;
 		corners_nb = 0;
 
 		cap = cvQueryFrame(capture);
@@ -219,7 +221,7 @@ void* launch_picture(void* info_void) {
 		// Ca marche, je sais pas trop pourquoi il faut inverser, mais bon
 		grad(cap, cap->height, cap->width, &norme_grad, &img_sobel_vert, &img_sobel_hori);
 		harris(img_sobel_hori, img_sobel_vert, cap->width, cap->height, (float) harris_lambda/lambda_divider, harris_threshold, &corners, &corners_nb, &h);
-		// printf("corners_nb=%d\n", corners_nb);
+
 		for(i=0 ; i<corners_nb ; i++) {
 			cvCircle(cap, corners[i], 1, CV_RGB(0,0,255), -1, 8, 0);
 		}
@@ -228,12 +230,8 @@ void* launch_picture(void* info_void) {
 		image1_gr = greyscale_img(prev_cap, prev_cap->height, prev_cap->width);
                 image2_gr = greyscale_img(cap, cap->height, cap->width);
 
-		//printf("plplpl\n");
 		vector = find_all_matches(image1_gr, image2_gr,cap->height, cap->width, corners1, corners,50,3,matches, corners_nb1, corners_nb);
-		if(vector.dx != 0){
-		printf("dx = %d\n",vector.dx);
-		printf("dy = %d\n",vector.dy);
-		}
+
 		center->x = prev_cap->height/2;
 		center->y = prev_cap->width/2;
 
@@ -242,9 +240,9 @@ void* launch_picture(void* info_void) {
 
 		cvLine(cap, *center, *vectors,cvScalar(200,200,0,20),6,8,0);
 		cvShowImage(window_title, cap);
-		//printf("la\n");
+
+		cvShowImage("win2", prev_cap);
 		prev_cap = cvCloneImage(cap);
-		//printf("clone\n");
 		memcpy(corners1, corners,cap->height * cap->width);
 		corners_nb1 = corners_nb;
 		key = cvWaitKey(1);
