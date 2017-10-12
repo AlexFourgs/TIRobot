@@ -2,3 +2,4 @@
 *.out
 bin/*.o
 *.gch
+.c.swp

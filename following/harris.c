@@ -14,9 +14,12 @@ int** harris(int** gradX, int** gradY, int x, int y, float lambda, CvPoint** cor
 
     *corners_nb = 0;
 
-    for(i = 2 ; i < y-3 ; i++) {
-        harris[i-2] = (int*) calloc(x-4, sizeof(int));
-        for(j = 2 ; j < x-2 ; j++) {
+    for(i = 1 ; i < y-3 ; i++) {
+        harris[i-1] = (int*) calloc(x-4, sizeof(int));
+        for(j = 1 ; j < x-3 ; j++) {
+            if(i == 1) {
+                printf("%d: %d\n", j, gradX[i][j]);
+            }
             gradXX_1 = gradX[i-1][j-1] ;
             gradXX_2 = gradX[i-1][j] ;
             gradXX_3 = gradX[i-1][j+1] ;
@@ -72,7 +75,7 @@ int** harris(int** gradX, int** gradY, int x, int y, float lambda, CvPoint** cor
 
             harris_pixel = gauss_gradXX*gauss_gradYY - gauss_gradXY - lambda*(norm*norm);
             // printf("%f, %f\n", norm, harris_pixel);
-            harris[i-2][j-2] = harris_pixel;
+            harris[i-1][j-1] = harris_pixel;
 
             if(harris_pixel > 1) {
                 CvPoint p = {j, i};
@@ -80,7 +83,9 @@ int** harris(int** gradX, int** gradY, int x, int y, float lambda, CvPoint** cor
                 *corners_nb += 1;
             }
         }
+        // printf("\nfin ligne %d\n", i);
     }
+    puts("");
 
     return harris;
 }
