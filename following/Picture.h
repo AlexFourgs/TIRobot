@@ -10,7 +10,9 @@
 #include <pthread.h>
 
 #include "Information.h"
-#define CAMERA 1
+#include "ti_alex.h"
+#include "harris.h"
+#define CAMERA 0
 
 // Etudier la couleur pour adapter la tolerence en fonction de R, G ou B.
 /*#define TOLERANCE_R 15

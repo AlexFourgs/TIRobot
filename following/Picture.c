@@ -146,6 +146,32 @@ void* launch_picture(void* info_void) {
 	int nbImage = 0 ;
 	// Tant qu'on appuie pas sur q le on continu la boucle.
 	key = cvWaitKey(1);
+
+	cap = cvQueryFrame(capture);
+	// Gradient sur Y, montre les lignes horizontales
+	int** img_sobel_vert = NULL;
+	// Gradient sur X, montre les lignes verticales
+	int** img_sobel_hori = NULL;
+
+	CvPoint* corners = malloc((*info->sizeX) * (*info->sizeY) * sizeof(Point));
+	int corners_nb = 0;
+
+	// TODO: optimiser img_sobel pour pas malloc à chaque fois
+
+	grad(cap, *info->sizeY, *info->sizeX, &img_sobel_vert, &img_sobel_hori);
+	// printf("%d\n", img_sobel_vert[0][0]);
+	int** h = harris(img_sobel_hori, img_sobel_vert, *info->sizeX, *info->sizeY, 0.5, &corners, &corners_nb);
+
+	printf("corners_nb=%d\n", corners_nb);
+	for(i=0 ; i<corners_nb ; i++) {
+		cvCircle(cap, corners[i], 5, CV_RGB(0,0,255), -1, 8, 0);
+	}
+	printf("%d\n", h[0][0]);
+
+
+	cvShowImage(window_title, cap);
+
+	/* Tracking rouge
 	while ((key != 'q') && (key != 'Q') && (*info->isEnd == 0)){
 		nbImage++ ;
 
@@ -163,7 +189,31 @@ void* launch_picture(void* info_void) {
 		cap = cvQueryFrame(capture);
 
 		// Si on traite en BGR
-		color.cam = cap ;
+		color.cam = cap;
+
+		// Gradient sur Y, montre les lignes horizontales
+		int** img_sobel_vert = NULL;
+		// Gradient sur X, montre les lignes verticales
+		int** img_sobel_hori = NULL;
+
+		CvPoint* corners = malloc((*info->sizeX) * (*info->sizeY) * sizeof(Point));
+		int corners_nb = 0;
+
+		// TODO: optimiser img_sobel pour pas malloc à chaque fois
+
+		grad(cap, *info->sizeY, *info->sizeX, &img_sobel_vert, &img_sobel_hori);
+		// printf("%d\n", img_sobel_vert[0][0]);
+		int** h = harris(img_sobel_hori, img_sobel_vert, *info->sizeX, *info->sizeY, 0.5, &corners, &corners_nb);
+
+		printf("corners_nb=%d\n", corners_nb);
+		for(i=0 ; i<corners_nb ; i++) {
+			cvCircle(cap, corners[i], 5, CV_RGB(0,0,255), -1, 8, 0);
+		}
+		if(count == 0) {
+			printf("%d\n", h[0][0]);
+		}
+
+		count ++;
 
 
 		// On parcours notre image (les pixels).
@@ -193,8 +243,7 @@ void* launch_picture(void* info_void) {
 		// On calcul le barycentre.
 		barycentre_coordonnees = barycenterCalculation (barycenter_x, barycenter_y, cap->width, cap->height, coefficient, &isVisible) ;
 
-		/*printf("barycentre x main = %d, barycentre y main = %d\n", barycentre_coordonnees.x,
-		barycentre_coordonnees.y);*/
+		// printf("barycentre x main = %d, barycentre y main = %d\n", barycentre_coordonnees.x, barycentre_coordonnees.y);
 		CvPoint p;
 		//printf("Barycentre update\n");
 		p.x = barycentre_coordonnees.x ;
@@ -230,6 +279,7 @@ void* launch_picture(void* info_void) {
 
 		//printf("t2-t1 : %d\n", (int) ((t2-t1)/CLOCKS_PER_SEC));
 	}
+	*/
 
 	//printf("Pour 10 secondes, on a traité %d images.\n", (int)nbImage);
 
