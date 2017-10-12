@@ -103,10 +103,12 @@ CvPoint matching_point(uchar** image_1 , uchar** image_2,int size_x, int size_y,
 }
 
 
-Vector find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y, CvPoint* harris1, CvPoint* harris2, int size_window, int size_patch){
+Vector find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y, CvPoint* harris1, CvPoint* harris2, int size_window, int size_patch, Match* matches){
 
 	CvPoint pt1;
 	CvPoint pt2;
+
+	matches = calloc(5000, sizeof(Match));
 
 	int i;
 	int dx;
@@ -127,6 +129,9 @@ Vector find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y
 		// compute distance x and y and add to the score table
 		dx = pt2.x - pt1.x;
 		dy = pt2.y - pt2.y;
+
+		matches[i].pt1 = pt1;
+		matches[i].pt2 = pt2;
 
 		// fill accumulation table
 		displacement_table[dx + 50][dy + 50] ++;
