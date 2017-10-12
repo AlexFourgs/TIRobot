@@ -100,7 +100,7 @@ void* launch_picture(void* info_void) {
 
 	// Déclaration des images
 	IplImage* cap ;
-	IplImage* grad ;
+	// IplImage* grad ;
 
 	// Déclaration de l'élément de capture à partir de la webcam
 	CvCapture *capture ;
@@ -167,7 +167,7 @@ void* launch_picture(void* info_void) {
 	for(j=0 ; j<*info->sizeX-4 ; j++) {
 		printf("%d ", img_sobel_vert[0][j]);
 	}
-	puts("");	
+	puts("");
 
 	int** h = harris(img_sobel_hori, img_sobel_vert, *info->sizeX, *info->sizeY, 0.5, &corners, &corners_nb);
 	// for(i=0 ; i<*info->sizeY-4 ; i++) {
@@ -277,7 +277,7 @@ void* launch_picture(void* info_void) {
 
 		// On affiche la webcam normalement.
 		cvShowImage(window_title, cap);
-		cvShowImage(window_title_2, grad);
+		// cvShowImage(window_title_2, grad);
 		cvSetMouseCallback(window_title, mouseEvent, &color);
 
 		//On modifie si besoin le coefficient
