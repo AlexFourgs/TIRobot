@@ -53,6 +53,11 @@ int** grad(IplImage* image, int nb_ligne, int nb_colonne, int*** img_sobel_vert,
     *img_sobel_hori = (int**)malloc((nb_ligne-2)*sizeof(int*));
     *img_sobel_vert = (int**)malloc((nb_ligne-2)*sizeof(int*));
 
+    // à effacer
+    byte** sobel_vert_byte = bmatrix(0, nb_ligne-2, 0, nb_colonne-2);
+    byte** sobel_hori_byte = bmatrix(0, nb_ligne-2, 0, nb_colonne-2);
+    byte** norme_grad_byte = bmatrix(0, nb_ligne-2, 0, nb_colonne-2);
+
     img_greyscale = greyscale_img(image, nb_ligne, nb_colonne);
 
     int i, j ;
