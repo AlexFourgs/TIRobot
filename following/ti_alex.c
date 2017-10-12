@@ -47,17 +47,18 @@ int** grad(IplImage* image, int nb_ligne, int nb_colonne, int*** img_sobel_vert,
     int** norme_grad ;
     uchar** img_greyscale ;
 
-    clock_t begin = clock();
+    // clock_t begin = clock();
 
     norme_grad = (int**)malloc((nb_ligne-2)*sizeof(int*));
     *img_sobel_hori = (int**)malloc((nb_ligne-2)*sizeof(int*));
     *img_sobel_vert = (int**)malloc((nb_ligne-2)*sizeof(int*));
 
+    /*
     // à effacer
     byte** sobel_vert_byte = bmatrix(0, nb_ligne-2, 0, nb_colonne-2);
     byte** sobel_hori_byte = bmatrix(0, nb_ligne-2, 0, nb_colonne-2);
     byte** norme_grad_byte = bmatrix(0, nb_ligne-2, 0, nb_colonne-2);
-
+    */
     img_greyscale = greyscale_img(image, nb_ligne, nb_colonne);
 
     int i, j ;
@@ -113,7 +114,7 @@ int** grad(IplImage* image, int nb_ligne, int nb_colonne, int*** img_sobel_vert,
             norme_grad[i-1][j-1] = sqrt((pixel_sobel_hori*pixel_sobel_hori)+(pixel_sobel_vert*pixel_sobel_vert));
         }
     }
-    clock_t end = clock();
+    // clock_t end = clock();
 
     // printf("%s : %f second(s) of execution.\n", __FUNCTION__, ((double)(end-begin)/CLOCKS_PER_SEC));
 

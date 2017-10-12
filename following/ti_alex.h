@@ -3,11 +3,12 @@
 
 #include <opencv/highgui.h>
 #include <opencv/cv.h>
+/*
 #include "./Lib/def.h"
 #include "./Lib/nrio.h"
 #include "./Lib/nrarith.h"
 #include "./Lib/nralloc.h"
-
+*/
 
 uchar greyscale_pixel(IplImage* pixel, int i, int j);
 uchar** greyscale_img(IplImage* img, int x, int y);
