@@ -153,14 +153,21 @@ void* launch_picture(void* info_void) {
 	// Gradient sur X, montre les lignes verticales
 	int** img_sobel_hori = NULL;
 
-	CvPoint* corners = malloc((*info->sizeX) * (*info->sizeY) * sizeof(Point));
+	CvPoint* corners = malloc((*info->sizeX) * (*info->sizeY) * sizeof(CvPoint));
 	int corners_nb = 0;
 
 	// TODO: optimiser img_sobel pour pas malloc à chaque fois
 
-	grad(cap, *info->sizeY, *info->sizeX, &img_sobel_vert, &img_sobel_hori);
-	// printf("%d\n", img_sobel_vert[0][0]);
+	// Ca marche, je sais pas trop pourquoi il faut inverser, mais bon
+	grad(cap, *info->sizeX, *info->sizeY, &img_sobel_vert, &img_sobel_hori);
+
 	int** h = harris(img_sobel_hori, img_sobel_vert, *info->sizeX, *info->sizeY, 0.5, &corners, &corners_nb);
+	// for(i=0 ; i<*info->sizeY-4 ; i++) {
+	// 	for(j=0 ; j<*info->sizeX-4 ; j++) {
+	// 		printf("%d ", h[i][j]);
+	// 	}
+	// 	puts("");
+	// }
 
 	printf("corners_nb=%d\n", corners_nb);
 	for(i=0 ; i<corners_nb ; i++) {
@@ -284,6 +291,7 @@ void* launch_picture(void* info_void) {
 	//printf("Pour 10 secondes, on a traité %d images.\n", (int)nbImage);
 
 	cvReleaseCapture(&capture);
+	cvWaitKey(0);
 	cvDestroyWindow(window_title);
 
 	*info->isEnd = 1;

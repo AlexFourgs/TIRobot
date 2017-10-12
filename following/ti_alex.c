@@ -80,7 +80,6 @@ int** grad(IplImage* image, int nb_ligne, int nb_colonne, int*** img_sobel_vert,
         (*img_sobel_hori)[i-1] = (int*)malloc((nb_colonne-2)*sizeof(int));
         (*img_sobel_vert)[i-1] = (int*)malloc((nb_colonne-2)*sizeof(int));
 
-
         for(j = 1 ; j < nb_colonne-1 ; j++){
             pixel_1 = img_greyscale[i-1][j-1] ;
             pixel_2 = img_greyscale[i-1][j] ;

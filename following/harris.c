@@ -3,7 +3,7 @@
 /* gcc -o harris.out harris.c ti_alex.c `pkg-config --libs opencv`*/
 
 int** harris(int** gradX, int** gradY, int x, int y, float lambda, CvPoint** corners, int* corners_nb) {
-    int** harris = (int**) malloc((y-4)*sizeof(int*));
+    int** harris = (int**) calloc(y-4, sizeof(int*));
 
     int i, j;
 
@@ -14,8 +14,8 @@ int** harris(int** gradX, int** gradY, int x, int y, float lambda, CvPoint** cor
 
     *corners_nb = 0;
 
-    for(i = 2 ; i < y-2 ; i++) {
-        harris[i-2] = (int*) malloc((x-4)*sizeof(int));
+    for(i = 2 ; i < y-3 ; i++) {
+        harris[i-2] = (int*) calloc(x-4, sizeof(int));
         for(j = 2 ; j < x-2 ; j++) {
             gradXX_1 = gradX[i-1][j-1] ;
             gradXX_2 = gradX[i-1][j] ;
@@ -71,7 +71,7 @@ int** harris(int** gradX, int** gradY, int x, int y, float lambda, CvPoint** cor
             norm = (gauss_gradXX+gauss_gradYY);
 
             harris_pixel = gauss_gradXX*gauss_gradYY - gauss_gradXY - lambda*(norm*norm);
-            printf("%f, %f\n", norm, harris_pixel);
+            // printf("%f, %f\n", norm, harris_pixel);
             harris[i-2][j-2] = harris_pixel;
 
             if(harris_pixel > 1) {
@@ -81,7 +81,6 @@ int** harris(int** gradX, int** gradY, int x, int y, float lambda, CvPoint** cor
             }
         }
     }
-
 
     return harris;
 }
