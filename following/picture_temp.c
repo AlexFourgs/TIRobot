@@ -40,6 +40,22 @@ int colorTracking (IplImage* cap, Color_pixel color, int i, uchar pixel_blue, uc
 	return 0 ;
 }
 
+int colorTrackingHSV (IplImage* cap, Color_pixel color_hsv, int i, uchar pixel_hue, uchar pixel_saturation, uchar pixel_value) {
+
+	// Si les pixels sont de la couleur on les met en rouge.
+	if ((pixel_hue >= (color_hsv.b)-TOLERANCE_B) && (pixel_hue <= (color_hsv.b)+TOLERANCE_B) && (pixel_saturation >= (color_hsv.g)-TOLERANCE_G)
+			&& (pixel_saturation <= (color_hsv.g)+TOLERANCE_G) && (pixel_value >= (color_hsv.r)-TOLERANCE_R)	&& (pixel_value <= (color_hsv.r)+TOLERANCE_R)){
+
+		cap->imageData[i] = 0 ;
+		cap->imageData[i+1] = 0 ;
+		cap->imageData[i+2] = 255 ;
+
+		return 1 ;
+	}
+
+	return 0 ;
+}
+
 Barycenter barycenterCalculation (int *barycenter_x, int *barycenter_y, int size_x, int size_y, int coefficient, int* isVisible) {
 	Barycenter coordonnees ;
 	coordonnees.x = coordonnees.y = 0 ;
@@ -347,11 +363,15 @@ void* launch_picture(void* info_void) {
 	else {
 		puts("Tracking de la couleur");
 
+		// Attributs pour la conversion hsv
+		IplImage* hsv ;
+
 		//coefficient
 		int coefficient = 1;
 		int isVisible = 0;
 
 		Color_pixel color ;
+		Color_pixel color_hsv ;
 		color.r = 0 ;
 		color.g = 255 ;
 		color.b = 0 ;
@@ -366,6 +386,10 @@ void* launch_picture(void* info_void) {
 		uchar pixel_blue ;
 		uchar pixel_green ;
 		uchar pixel_red ;
+
+		uchar pixel_hue ;
+		uchar pixel_saturation ;
+		uchar pixel_value ;
 
 		int sizeXCam = cap->width;
 		int sizeYCam = cap->height;
@@ -401,8 +425,14 @@ void* launch_picture(void* info_void) {
 			// On met la capture de la webcam dans l'attribut cap.
 			cap = cvQueryFrame(capture);
 
+			// Conversion en HSV
+			cvCopy(cap, hsv, NULL);
+			cvSetImageROI(cap, cvRect(0, 0, cap->width, cap->height));
+			cvCvtColor(cap, hsv, CV_BGR2HSV);
+
 			// Si on traite en BGR
 			color.cam = cap;
+			color_hsv.cam = hsv;
 
 			// On parcours notre image (les pixels).
 			int widthMin = ((*info->sizeX/2) - ((*info->sizeX/2)/coefficient));
@@ -417,8 +447,14 @@ void* launch_picture(void* info_void) {
 					pixel_green = (uchar)(cap->imageData[((i*3)+(j*cap->widthStep))+1]) ;
 					pixel_red = (uchar)(cap->imageData[((i*3)+(j*cap->widthStep))+2]) ;
 
+					// Pixel H, S, V en fonction de la position
+					pixel_hue = (uchar)(hsv->imageData[((i*3)+(j*hsv->widthStep))]) ;
+					pixel_saturation = (uchar)(hsv->imageData[((i*3)+(j*hsv->widthStep))+1]) ;
+					pixel_value = (uchar)(hsv->imageData[((i*3)+(j*hsv->widthStep))+2]) ;
+
 					// Tracking des pixels en fonction de la couleur.
-					if(colorTracking(cap, color, ((i*3)+(j*cap->widthStep)), pixel_blue, pixel_green, pixel_red)){
+					if(colorTrackingHSV(cap, color_hsv, ((i*3)+(j*cap->widthStep)), pixel_hue, pixel_saturation, pixel_value)){
+					//if(colorTracking(cap, color, ((i*3)+(j*cap->widthStep)), pixel_blue, pixel_green, pixel_red)){
 						//printf("y = %d, x = %d\n", i/((cap->width)*3), i%((cap->width)*3));
 						//printf("x = %d, y = %d\n", i/3, j);
 						barycenter_y[j-heightMin]++ ;
