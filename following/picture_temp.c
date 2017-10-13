@@ -115,6 +115,9 @@ void* launch_picture(void* info_void) {
 	// Tant qu'on appuie pas sur q le on continu la boucle.
 	key = cvWaitKey(1);
 
+	clock_t start, end;
+	float fps;
+
 	// Harris
 	if((*info).type == 'h') {
 		puts("Tracking des POI (Harris)");
@@ -166,6 +169,7 @@ void* launch_picture(void* info_void) {
 		harris(img_sobel_hori, img_sobel_vert, cap->width, cap->height, (float) harris_lambda/lambda_divider, harris_threshold, &corners, &corners_nb, &h);
 
 		while ((key != 'q') && (key != 'Q') && (*info->isEnd == 0)){
+			start = clock();
 			nbImage++ ;
 			corners_nb = 0;
 
@@ -191,7 +195,7 @@ void* launch_picture(void* info_void) {
 			cvLine(cap, *center, *vectors, cvScalar(200, 200, 0, 20), 6, 8, 0);
 			cvShowImage(window_title, cap);
 
-			prev_cap = cvCloneImage(cap);
+			cvCopy(cap, prev_cap, NULL);
 			memcpy(corners1, corners, cap->height * cap->width);
 
 			for(i=0 ; i<cap->height ; i++) {
@@ -201,6 +205,11 @@ void* launch_picture(void* info_void) {
 			}
 			corners_nb1 = corners_nb;
 			key = cvWaitKey(1);
+
+			end = clock();
+			fps = (float) CLOCKS_PER_SEC / (end-start);
+
+			printf("FPS: %f\n", fps);
 		}
 
 		for(i = 0 ; i < cap->height-4 ; i++) {
@@ -271,6 +280,7 @@ void* launch_picture(void* info_void) {
 		gradient_corner_detection(img_sobel_hori, img_sobel_vert, cap->width, cap->height, threshold, &corners, &corners_nb);
 
 		while ((key != 'q') && (key != 'Q') && (*info->isEnd == 0)){
+			start = clock();
 			nbImage++ ;
 			corners_nb = 0;
 
@@ -296,8 +306,9 @@ void* launch_picture(void* info_void) {
 			cvLine(cap, *center, *vectors, cvScalar(200, 200, 0, 20), 6, 8, 0);
 			cvShowImage(window_title, cap);
 
-			prev_cap = cvCloneImage(cap);
-			memcpy(corners1, corners, cap->height * cap->width);
+			cvCopy(cap, prev_cap, NULL);
+
+			memcpy(corners1, corners, cap->height * cap->width * sizeof(ValuePoint));
 
 			for(i=0 ; i<cap->height ; i++) {
 				for(j=0 ; j<cap->width ; j++) {
@@ -306,6 +317,11 @@ void* launch_picture(void* info_void) {
 			}
 			corners_nb1 = corners_nb;
 			key = cvWaitKey(1);
+
+			end = clock();
+			fps = (float) CLOCKS_PER_SEC / (end-start);
+
+			printf("FPS: %f\n", fps);
 		}
 
 		for(i = 0 ; i < cap->height-4 ; i++) {
@@ -369,6 +385,7 @@ void* launch_picture(void* info_void) {
 		cvCreateTrackbar("Saturation Tolerance", "Image Originale", &tolerance_s, 125, NULL);
 
 		while ((key != 'q') && (key != 'Q') && (*info->isEnd == 0)){
+			start = clock();
 			nbImage++ ;
 
 			if(key == 'r'){
@@ -450,6 +467,10 @@ void* launch_picture(void* info_void) {
 			key = cvWaitKey(1);
 
 			//printf("t2-t1 : %d\n", (int) ((t2-t1)/CLOCKS_PER_SEC));
+			end = clock();
+			fps = (float) CLOCKS_PER_SEC / (end-start);
+
+			printf("FPS: %f\n", fps);
 		}
 	}
 

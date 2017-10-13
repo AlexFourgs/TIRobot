@@ -8,6 +8,7 @@
 #include <opencv/highgui.h>
 #include <opencv/cv.h>
 #include <pthread.h>
+#include <time.h>
 //#include "./Lib/def.h"
 //#include "./Lib/nrio.h"
 //#include "./Lib/nrarith.h"
