@@ -4,7 +4,18 @@
 #include "Picture.h"
 #include "Follow.h"
 
-int main(int argc, char** argv){
+int main(int argc, char** argv) {
+
+	/*
+	./cam.out c pour démarrer le tracking de couleur (par défaut)
+	./cam.out h pour démarrer le tracking de POI (Harris)
+	./cam.out g pour démarrer le tracking de POI (gradient)
+	*/
+
+	char type = 'c';
+	if(argc >= 2) {
+		type = argv[1][0];
+	}
 
 	Info* info = malloc(sizeof(Info));
 	pthread_t picture, follow;
@@ -15,6 +26,8 @@ int main(int argc, char** argv){
 	info->reset = calloc(1, sizeof(int));
 	info->sizeX = NULL;
 	info->sizeY = NULL;
+	info->type = type;
+
 
 	pthread_create(&picture, NULL, launch_picture, info);
 	pthread_create(&follow, NULL, launch_follow, info);

@@ -28,24 +28,20 @@ uchar greyscale_pixel(IplImage* pixel, int i, int j){
  *
  *  This function convert a colored IplImage into a char** greyscale image.
  */
-uchar** greyscale_img(IplImage* img, int nb_ligne, int nb_colonne){
+void greyscale_img(IplImage* img, int nb_ligne, int nb_colonne, uchar*** gr) {
     int i, j ;
-    uchar** img_greyscale = (uchar**)malloc(nb_ligne*sizeof(uchar*));
 
     for(i = 0 ; i < nb_ligne ; i++){
-        img_greyscale[i] = (uchar*)malloc(nb_colonne*sizeof(uchar));
         for(j = 0 ; j < nb_colonne ; j++){
-            img_greyscale[i][j] = greyscale_pixel(img, j, i);
+            (*gr)[i][j] = greyscale_pixel(img, j, i);
         }
     }
-
-    return img_greyscale ;
 }
 
 
-void grad(IplImage* image, int nb_ligne, int nb_colonne, int*** norme_grad, int*** img_sobel_vert, int*** img_sobel_hori) {
+void grad(IplImage* image, int nb_ligne, int nb_colonne, int*** norme_grad, int*** img_sobel_vert, int*** img_sobel_hori, uchar*** gr) {
     // int** norme_grad ;
-    uchar** img_greyscale ;
+    // uchar** img_greyscale ;
 
     // clock_t begin = clock();
 
@@ -55,8 +51,8 @@ void grad(IplImage* image, int nb_ligne, int nb_colonne, int*** norme_grad, int*
     byte** sobel_hori_byte = bmatrix(0, nb_ligne-2, 0, nb_colonne-2);
     byte** norme_grad_byte = bmatrix(0, nb_ligne-2, 0, nb_colonne-2);
     */
-    img_greyscale = greyscale_img(image, nb_ligne, nb_colonne);
-
+    // img_greyscale = greyscale_img(image, nb_ligne, nb_colonne, gr);
+    greyscale_img(image, nb_ligne, nb_colonne, gr);
     int i, j ;
 
     int pixel_1 = 0;
@@ -73,14 +69,23 @@ void grad(IplImage* image, int nb_ligne, int nb_colonne, int*** norme_grad, int*
     for(i = 1 ; i < nb_ligne-1 ; i++) {
 
         for(j = 1 ; j < nb_colonne-1 ; j++) {
-            pixel_1 = img_greyscale[i-1][j-1] ;
-            pixel_2 = img_greyscale[i-1][j] ;
-            pixel_3 = img_greyscale[i-1][j+1] ;
-            pixel_4 = img_greyscale[i][j-1] ;
-            pixel_6 = img_greyscale[i][j+1] ;
-            pixel_7 = img_greyscale[i+1][j-1] ;
-            pixel_8 = img_greyscale[i+1][j] ;
-            pixel_9 = img_greyscale[i+1][j+1] ;
+            // pixel_1 = img_greyscale[i-1][j-1] ;
+            // pixel_2 = img_greyscale[i-1][j] ;
+            // pixel_3 = img_greyscale[i-1][j+1] ;
+            // pixel_4 = img_greyscale[i][j-1] ;
+            // pixel_6 = img_greyscale[i][j+1] ;
+            // pixel_7 = img_greyscale[i+1][j-1] ;
+            // pixel_8 = img_greyscale[i+1][j] ;
+            // pixel_9 = img_greyscale[i+1][j+1] ;
+
+            pixel_1 = (*gr)[i-1][j-1] ;
+            pixel_2 = (*gr)[i-1][j] ;
+            pixel_3 = (*gr)[i-1][j+1] ;
+            pixel_4 = (*gr)[i][j-1] ;
+            pixel_6 = (*gr)[i][j+1] ;
+            pixel_7 = (*gr)[i+1][j-1] ;
+            pixel_8 = (*gr)[i+1][j] ;
+            pixel_9 = (*gr)[i+1][j+1] ;
 
             // sobel vertical
             pixel_sobel_vert = -pixel_1

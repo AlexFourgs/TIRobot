@@ -12,10 +12,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include <highgui.h>
-#include <cv.h>
+#include <opencv/highgui.h>
+#include <opencv/cv.h>
 #include <pthread.h>
+#include "ValuePoint.h"
 
-int** gradient_corner_detection(int** gradX, int** gradY,int size_x, int size_y, int threshold,CvPoint** corners, int* corners_nb);
+void gradient_corner_detection(int** gradX, int** gradY, int size_x, int size_y, int threshold, ValuePoint** corners, int* corners_nb);
 
 #endif

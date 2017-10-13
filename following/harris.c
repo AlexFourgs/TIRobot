@@ -2,8 +2,8 @@
 
 /* gcc -o harris.out harris.c ti_alex.c `pkg-config --libs opencv`*/
 
-void harris(int** gradX, int** gradY, int x, int y, float lambda, int threshold, CvPoint** corners, int* corners_nb, int*** h) {
-    int i, j;
+void harris(int** gradX, int** gradY, int x, int y, float lambda, int threshold, ValuePoint** corners, int* corners_nb, int*** h) {
+    int i, j, k;
 
     int gradXX_1, gradXX_2, gradXX_3, gradXX_4, gradXX_5, gradXX_6, gradXX_7, gradXX_8, gradXX_9 ;
     int gradYY_1, gradYY_2, gradYY_3, gradYY_4, gradYY_5, gradYY_6, gradYY_7, gradYY_8, gradYY_9 ;
@@ -70,9 +70,20 @@ void harris(int** gradX, int** gradY, int x, int y, float lambda, int threshold,
             harris_pixel = gauss_gradXX*gauss_gradYY - gauss_gradXY - lambda*(norm*norm);
             (*h)[i-1][j-1] = harris_pixel;
 
+            // if(harris_pixel > threshold) {
+            //     CvPoint p = {j, i};
+            //     (*corners)[*corners_nb] = p;
+            //     *corners_nb += 1;
+            // }
             if(harris_pixel > threshold) {
+                k = *corners_nb -1;
+                while(harris_pixel > (*corners)[k].value && k >= 0) {
+                    (*corners)[k+1] = (*corners)[k];
+                    k--;
+                }
                 CvPoint p = {j, i};
-                (*corners)[*corners_nb] = p;
+                (*corners)[k+1].p = p;
+                (*corners)[k+1].value = harris_pixel;
                 *corners_nb += 1;
             }
         }

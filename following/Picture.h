@@ -16,8 +16,10 @@
 #include "Information.h"
 #include "ti_alex.h"
 #include "harris.h"
+#include "gradient_corner.h"
+#include "ValuePoint.h"
 
-#define CAMERA 1
+#define CAMERA 0
 
 // Etudier la couleur pour adapter la tolerence en fonction de R, G ou B.
 /*#define TOLERANCE_R 15

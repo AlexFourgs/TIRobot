@@ -15,6 +15,7 @@
 #include <opencv/highgui.h>
 #include <opencv/cv.h>
 #include <pthread.h>
+#include "ValuePoint.h"
 
 /**
  * \struct Point
@@ -76,7 +77,7 @@ double cross_correlation(uchar** image_1, uchar** image_2, int size_x, int size_
  * \return the point in the second image which is matching more of each others with the point to compare
 */
 
-CvPoint matching_point(uchar** image_1 , uchar** image_2, int size_x, int size_y, int ptx, int pty, CvPoint* harris2, int window_size, int size_patch, int nbPoints);
+CvPoint matching_point(uchar** image_1 , uchar** image_2, int size_x, int size_y, int ptx, int pty, ValuePoint* harris2, int window_size, int size_patch, int nbPoints);
 
 /**
  * \fn double euclidian_distance(uchar** image_1, uchar** image_2, int size_x, int size_y, int ptx1, int ptx2, int pty1, int pty2, int size_patch)
@@ -111,7 +112,7 @@ double euclidian_distance(uchar** image_1, uchar** image_2, int size_x, int size
 */
 
 
-Vector find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y, CvPoint* harris1, CvPoint* harris2, int size_window, int size_patch, Match* match, int nbPoints1, int nbPoints2);
+Vector find_all_matches(uchar** image_1, uchar** image_2, int size_x, int size_y, ValuePoint* harris1, ValuePoint* harris2, int size_window, int size_patch, Match* match, int nbPoints1, int nbPoints2);
 
 
 #endif

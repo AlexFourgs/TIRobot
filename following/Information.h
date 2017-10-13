@@ -11,6 +11,7 @@ struct Info {
 	int* y;
 	int* isEnd;
 	int* reset;
+	char type;
 };
 
 #endif
