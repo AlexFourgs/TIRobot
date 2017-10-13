@@ -228,9 +228,13 @@ void* launch_picture(void* info_void) {
 
 		int threshold = 5000, corners_max = 50;
 
+		CvPoint* center = malloc(sizeof(CvPoint));
+		CvPoint* vectors = malloc(sizeof(CvPoint));
 		ValuePoint* corners = (ValuePoint*) malloc(cap->height * cap->width * sizeof(ValuePoint));
-		int corners_nb;
+		ValuePoint* corners1 = (ValuePoint*) malloc(cap->height * cap->width * sizeof(ValuePoint));
+		int corners_nb = 0, corners_nb1 = 0;
 
+		Vector vector;
 		uchar** image1_gr = (uchar**)malloc(cap->height*sizeof(uchar*));
 		uchar** image2_gr = (uchar**)malloc(cap->height*sizeof(uchar*));
 
@@ -238,6 +242,8 @@ void* launch_picture(void* info_void) {
 			image1_gr[i] = (uchar*)malloc(cap->width*sizeof(uchar));
 			image2_gr[i] = (uchar*)malloc(cap->width*sizeof(uchar));
 		}
+
+		Match* matches = malloc(500*sizeof(Match));
 
 		cvCreateTrackbar("Nombre de points", "Original Camera", &corners_max, 500, NULL);
 		cvCreateTrackbar("Seuil gradient", "Original Camera", &threshold, 30000, NULL);
@@ -261,6 +267,9 @@ void* launch_picture(void* info_void) {
 	        img_sobel_hori[i] = (int*)malloc((cap->width-2)*sizeof(int));
 		}
 
+		grad(cap, cap->height, cap->width, &norme_grad, &img_sobel_vert, &img_sobel_hori, &image1_gr);
+		gradient_corner_detection(img_sobel_hori, img_sobel_vert, cap->width, cap->height, threshold, &corners, &corners_nb);
+
 		while ((key != 'q') && (key != 'Q') && (*info->isEnd == 0)){
 			nbImage++ ;
 			corners_nb = 0;
@@ -276,7 +285,26 @@ void* launch_picture(void* info_void) {
 				cvCircle(cap, corners[i].p, 1, CV_RGB(0, 0, 255), -1, 8, 0);
 			}
 
+			vector = find_all_matches(image1_gr, image2_gr,cap->height, cap->width, corners1, corners, 50, 3, matches, corners_nb1, corners_nb);
+
+			center->x = prev_cap->height/2;
+			center->y = prev_cap->width/2;
+
+			vectors->x = center->x + vector.dx;
+			vectors->y = center->y + vector.dy;
+
+			cvLine(cap, *center, *vectors, cvScalar(200, 200, 0, 20), 6, 8, 0);
 			cvShowImage(window_title, cap);
+
+			prev_cap = cvCloneImage(cap);
+			memcpy(corners1, corners, cap->height * cap->width);
+
+			for(i=0 ; i<cap->height ; i++) {
+				for(j=0 ; j<cap->width ; j++) {
+					image1_gr[i][j] = image2_gr[i][j];
+				}
+			}
+			corners_nb1 = corners_nb;
 			key = cvWaitKey(1);
 		}
 
