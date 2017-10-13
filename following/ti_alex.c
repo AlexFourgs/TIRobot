@@ -43,15 +43,11 @@ uchar** greyscale_img(IplImage* img, int nb_ligne, int nb_colonne){
 }
 
 
-int** grad(IplImage* image, int nb_ligne, int nb_colonne, int*** img_sobel_vert, int*** img_sobel_hori){
-    int** norme_grad ;
+void grad(IplImage* image, int nb_ligne, int nb_colonne, int*** norme_grad, int*** img_sobel_vert, int*** img_sobel_hori) {
+    // int** norme_grad ;
     uchar** img_greyscale ;
 
     // clock_t begin = clock();
-
-    norme_grad = (int**)malloc((nb_ligne-2)*sizeof(int*));
-    *img_sobel_hori = (int**)malloc((nb_ligne-2)*sizeof(int*));
-    *img_sobel_vert = (int**)malloc((nb_ligne-2)*sizeof(int*));
 
     /*
     // à effacer
@@ -74,13 +70,9 @@ int** grad(IplImage* image, int nb_ligne, int nb_colonne, int*** img_sobel_vert,
 
     int pixel_sobel_vert = 0, pixel_sobel_hori = 0 ;
 
-    for(i = 1 ; i < nb_ligne-1 ; i++){
+    for(i = 1 ; i < nb_ligne-1 ; i++) {
 
-        norme_grad[i-1] = (int*)malloc((nb_colonne-2)*sizeof(int));
-        (*img_sobel_hori)[i-1] = (int*)malloc((nb_colonne-2)*sizeof(int));
-        (*img_sobel_vert)[i-1] = (int*)malloc((nb_colonne-2)*sizeof(int));
-
-        for(j = 1 ; j < nb_colonne-1 ; j++){
+        for(j = 1 ; j < nb_colonne-1 ; j++) {
             pixel_1 = img_greyscale[i-1][j-1] ;
             pixel_2 = img_greyscale[i-1][j] ;
             pixel_3 = img_greyscale[i-1][j+1] ;
@@ -110,15 +102,10 @@ int** grad(IplImage* image, int nb_ligne, int nb_colonne, int*** img_sobel_vert,
 
             (*img_sobel_hori)[i-1][j-1] = pixel_sobel_hori ;
 
-            norme_grad[i-1][j-1] = sqrt((pixel_sobel_hori*pixel_sobel_hori)+(pixel_sobel_vert*pixel_sobel_vert));
+            (*norme_grad)[i-1][j-1] = sqrt((pixel_sobel_hori*pixel_sobel_hori)+(pixel_sobel_vert*pixel_sobel_vert));
         }
     }
     // clock_t end = clock();
 
     // printf("%s : %f second(s) of execution.\n", __FUNCTION__, ((double)(end-begin)/CLOCKS_PER_SEC));
-
-    puts("");
-
-    return norme_grad ;
-
 }

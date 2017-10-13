@@ -2,9 +2,7 @@
 
 /* gcc -o harris.out harris.c ti_alex.c `pkg-config --libs opencv`*/
 
-int** harris(int** gradX, int** gradY, int x, int y, float lambda, int threshold, CvPoint** corners, int* corners_nb) {
-    int** harris = (int**) calloc(y-4, sizeof(int*));
-
+void harris(int** gradX, int** gradY, int x, int y, float lambda, int threshold, CvPoint** corners, int* corners_nb, int*** h) {
     int i, j;
 
     int gradXX_1, gradXX_2, gradXX_3, gradXX_4, gradXX_5, gradXX_6, gradXX_7, gradXX_8, gradXX_9 ;
@@ -15,7 +13,6 @@ int** harris(int** gradX, int** gradY, int x, int y, float lambda, int threshold
     *corners_nb = 0;
 
     for(i = 1 ; i < y-3 ; i++) {
-        harris[i-1] = (int*) calloc(x-4, sizeof(int));
         for(j = 1 ; j < x-3 ; j++) {
             gradXX_1 = gradX[i-1][j-1] ;
             gradXX_2 = gradX[i-1][j] ;
@@ -71,21 +68,13 @@ int** harris(int** gradX, int** gradY, int x, int y, float lambda, int threshold
             norm = (gauss_gradXX+gauss_gradYY);
 
             harris_pixel = gauss_gradXX*gauss_gradYY - gauss_gradXY - lambda*(norm*norm);
-            if(i == 1) {
-                printf("%d: %f\n", j, harris_pixel);
-            }
-            harris[i-1][j-1] = harris_pixel;
+            (*h)[i-1][j-1] = harris_pixel;
 
             if(harris_pixel > threshold) {
-                printf("%f\n", harris_pixel);
                 CvPoint p = {j, i};
                 (*corners)[*corners_nb] = p;
                 *corners_nb += 1;
             }
         }
-        // printf("\nfin ligne %d\n", i);
     }
-    puts("");
-
-    return harris;
 }
