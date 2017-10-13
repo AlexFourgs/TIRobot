@@ -251,7 +251,7 @@ void* launch_picture(void* info_void) {
 	else if((*info).type == 'g') {
 		puts("Tracking des POI (gradient)");
 
-		int threshold = 5000, corners_max = 50;
+		int threshold = 4000, corners_max = 50;
 
 		CvPoint* center = malloc(sizeof(CvPoint));
 		CvPoint* vectors = malloc(sizeof(CvPoint));
@@ -295,6 +295,9 @@ void* launch_picture(void* info_void) {
 		grad(cap, cap->height, cap->width, &norme_grad, &img_sobel_vert, &img_sobel_hori, &image1_gr);
 		gradient_corner_detection(img_sobel_hori, img_sobel_vert, cap->width, cap->height, threshold, &corners, &corners_nb);
 
+		int thresh_incr = 0;
+		float sum = 0.0;
+
 		while ((key != 'q') && (key != 'Q') && (*info->isEnd == 0)){
 			start = clock();
 			nbImage++ ;
@@ -337,7 +340,18 @@ void* launch_picture(void* info_void) {
 			end = clock();
 			fps = (float) CLOCKS_PER_SEC / (end-start);
 
-			printf("FPS: %f\n", fps);
+			sum += fps;
+			thresh_incr++;
+
+			if(thresh_incr == 20) {
+				printf("%d, %f\n", threshold, sum/(float)thresh_incr);
+				threshold+=100;
+				thresh_incr = 0;
+			}
+
+			if(threshold == 20000) {
+				key = 'q';
+			}
 		}
 
 		for(i = 0 ; i < cap->height-4 ; i++) {
