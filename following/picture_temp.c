@@ -142,6 +142,11 @@ void* launch_picture(void* info_void) {
 
 		Match* matches = malloc(500*sizeof(Match));
 
+		int sizeXCam = cap->width;
+		int sizeYCam = cap->height;
+		info->sizeX = &sizeXCam;
+		info->sizeY = &sizeYCam;
+
 		cvCreateTrackbar("Nombre de points", "Original Camera", &corners_max, 500, NULL);
 		cvCreateTrackbar("Seuil Harris", "Original Camera", &harris_threshold, 5000000, NULL);
 		cvCreateTrackbar("Lambda Harris", "Original Camera", &harris_lambda, 250, NULL);
@@ -254,6 +259,11 @@ void* launch_picture(void* info_void) {
 
 		Match* matches = malloc(500*sizeof(Match));
 
+		int sizeXCam = cap->width;
+		int sizeYCam = cap->height;
+		info->sizeX = &sizeXCam;
+		info->sizeY = &sizeYCam;
+
 		cvCreateTrackbar("Nombre de points", "Original Camera", &corners_max, 500, NULL);
 		cvCreateTrackbar("Seuil gradient", "Original Camera", &threshold, 30000, NULL);
 
@@ -297,6 +307,9 @@ void* launch_picture(void* info_void) {
 
 			vector = find_all_matches(image1_gr, image2_gr,cap->height, cap->width, corners1, corners, 50, 3, matches, corners_nb1, corners_nb);
 
+			*info->x = vector.dx;
+			*info->y = vector.dy;
+
 			center->x = prev_cap->height/2;
 			center->y = prev_cap->width/2;
 
@@ -321,7 +334,7 @@ void* launch_picture(void* info_void) {
 			end = clock();
 			fps = (float) CLOCKS_PER_SEC / (end-start);
 
-			printf("FPS: %f\n", fps);
+			// printf("FPS: %f\n", fps);
 		}
 
 		for(i = 0 ; i < cap->height-4 ; i++) {
@@ -470,7 +483,7 @@ void* launch_picture(void* info_void) {
 			end = clock();
 			fps = (float) CLOCKS_PER_SEC / (end-start);
 
-			printf("FPS: %f\n", fps);
+			// printf("FPS: %f\n", fps);
 		}
 	}
 

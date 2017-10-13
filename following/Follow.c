@@ -65,8 +65,101 @@ void writeOnFile(FILE * fichier, char* texte){
 	fputs(texte, fichier);
 }
 
-void send_instruction(int taille_ecran_x, int taille_ecran_y, Serial_com* sc, int x, int y, char type)
-{
+void send_instruction_poi(int taille_ecran_x, int taille_ecran_y, Serial_com* sc, int x, int y) {
+
+	#ifdef DEBUG
+	printf("-----------debut message----------\n");
+	#endif
+
+	int centre_x=taille_ecran_x/2;
+	int centre_y=taille_ecran_y/2;
+
+	int delta_x;
+	int delta_y;
+	int delta, deltaMax;
+	//int absx;
+	//int absy;
+	//recupération de  la position pas encore fait
+
+
+	//déclaration des instructions
+	char angle_x;
+	char angle_y;
+
+	//calcul du delta
+	delta_x = -x;
+	delta_y = -y;
+
+	// delta = distance entre barycentre et centre
+	delta = (sqrt((delta_x * delta_x) + (delta_y * delta_y)));
+	// deltaMax = distance max possible entre le barycentre et le centre
+	deltaMax = (sqrt((centre_x * centre_x) + (centre_y * centre_y)));
+
+	//printf("delta : %d\n", delta);
+
+	int threshold = 3;
+	//calcul de la commande à envoyer
+	if(delta_x > threshold){
+		angle_x = '+';
+	}
+	else if(delta_x < -threshold){
+		angle_x = '-';
+	}
+	else{
+		angle_x = '0';
+	}
+
+	if(delta_y > threshold){
+		angle_y = 'p';
+	}
+	else if(delta_y < -threshold){
+		angle_y = 'm';
+	}
+	else{
+		angle_y = 'n';
+	}
+	tcflush(sc->fd, TCIFLUSH);
+
+	if((angle_x != '0') || (angle_y != 'n')){
+
+		//envoie de la commande au servo moteur
+		if(write_s(sc, &angle_x, 1)!=-1){
+			#ifdef DEBUG
+			printf("signal envoyé : instruction pan\n");
+			#endif
+		}
+
+		else{
+			#ifdef DEBUG
+			printf("erreur port série\n");
+			#endif
+		}
+
+		if(write_s(sc, &angle_y, 1)!=-1){
+			#ifdef DEBUG
+			printf("signal envoyé : instruction tilt\n");
+			#endif
+		}
+
+		else{
+			#ifdef DEBUG
+			printf("erreur port série\n");
+			#endif
+		}
+
+		#ifdef DEBUG
+		printf("------------fin message-------------\n");
+		#endif
+		usleep(((deltaMax - delta) * 100));//pid : delay de signal
+		//printf("Delay : %d\n", ((deltaMax - delta) * 10));
+		//printf("delta : %d\n", delta);
+	}
+	else{
+		usleep(25000);
+	}
+}
+
+void send_instruction_color(int taille_ecran_x, int taille_ecran_y, Serial_com* sc, int x, int y) {
 
 	if((x != -1) || (y != -1)){
 
@@ -89,16 +182,10 @@ void send_instruction(int taille_ecran_x, int taille_ecran_y, Serial_com* sc, in
 		char angle_x;
 		char angle_y;
 
-		//calcul du delta
-		if((type != 'g')&&(type != 'h')){
-			delta_x = centre_x - x;
-			delta_y = centre_y - y;
-		}
 
-		if((type == 'g')||(type == 'h')){
-			delta_x = x;
-			delta_y = y;
-		}
+		//calcul du delta
+		delta_x = centre_x - x;
+		delta_y = centre_y - y;
 
 		// delta = distance entre barycentre et centre
 		delta = (sqrt((delta_x * delta_x) + (delta_y * delta_y)));
@@ -109,56 +196,26 @@ void send_instruction(int taille_ecran_x, int taille_ecran_y, Serial_com* sc, in
 
 
 		//calcul de la commande à envoyer
-
-		if((type != 'g')&&(type != 'h')){
-
-			if(delta_x > TOLERANCE_CENTRE){
-				angle_x = '+';
-			}
-			else if(delta_x < -TOLERANCE_CENTRE){
-				angle_x = '-';
-			}
-			else{
-				angle_x = '0';
-			}
-
-			if(delta_y > TOLERANCE_CENTRE){
-				angle_y = 'p';
-			}
-			else if(delta_y < -TOLERANCE_CENTRE){
-				angle_y = 'm';
-			}
-			else{
-				angle_y = 'n';
-			}
-
+		if(delta_x > TOLERANCE_CENTRE){
+			angle_x = '+';
+		}
+		else if(delta_x < -TOLERANCE_CENTRE){
+			angle_x = '-';
+		}
+		else{
+			angle_x = '0';
 		}
 
-                if((type == 'g')||(type == 'h')){
-			if(delta_x > 0){
-                                angle_x = '+';
-                        }
-                        else if(delta_x < 0){
-                                angle_x = '-';
-                        }
-                        else{
-                                angle_x = '0';
-                        }
-
-                        if(delta_y > 0){
-                                angle_y = 'p';
-                        }
-                        else if(delta_y < 0){
-                                angle_y = 'm';
-                        }
-                        else{
-                                angle_y = 'n';
-                        }
-
-
-
-
+		if(delta_y > TOLERANCE_CENTRE){
+			angle_y = 'p';
 		}
+		else if(delta_y < -TOLERANCE_CENTRE){
+			angle_y = 'm';
+		}
+		else{
+			angle_y = 'n';
+		}
+
 		tcflush(sc->fd, TCIFLUSH);
 
 		if((angle_x != '0') || (angle_y != 'n')){
@@ -204,8 +261,7 @@ void send_instruction(int taille_ecran_x, int taille_ecran_y, Serial_com* sc, in
 	}
 }
 
-void reset(Serial_com* sc)
-{
+void reset(Serial_com* sc) {
 
 	//envoie de la commande au servo moteur
 	if(write_s(sc, "r", 1) != -1){
@@ -228,8 +284,6 @@ int calculdelta(int x, int y, int sizeXScreen, int sizeYScreen){
 
 	return delta;
 }
-
-
 
 void writeInCsv(int* tabWr, int* tabWu,FILE *f){
 	int i=0;
@@ -292,37 +346,39 @@ void* launch_follow(void* info_void){
 	}
 
 	#ifdef DEBUG
-		FILE * f;
-		//scanf("%s", name);
-		//strcat(name, ".csv");
-		printf("ecriture dans ... %s \n", name);
+	FILE * f;
+	//scanf("%s", name);
+	//strcat(name, ".csv");
+	printf("ecriture dans ... %s \n", name);
 
-		if((f=fopen(name, "w+"))!=NULL)
-		printf("ouverture fichier ok...");
-		else
-		printf("erreur fichier");
+	if((f=fopen(name, "w+"))!=NULL)
+	printf("ouverture fichier ok...");
+	else
+	printf("erreur fichier");
 
-		for(i=0; i < SIZE_MAX_CSV; i++){
-			tabWr[i] = -1;
-			tabWu[i] = -1;
-		}
+	for(i=0; i < SIZE_MAX_CSV; i++){
+		tabWr[i] = -1;
+		tabWu[i] = -1;
+	}
 
 	#endif
 
 	reset(&test);
-	while(*info->isEnd == 0)
-	{
-		if(*info->reset){
-			reset(&test);
-			*info->reset = 0;
-		}
-		else{
-			int newX = *info->x;
-			int newY = *info->y;
-			/**info->x = -1;
-			*info->y = -1;*/
-			send_instruction(*info->sizeX, *info->sizeY, &test, newX, newY, (*info).type);
-			#ifdef DEBUG
+
+	if((*info).type == 'g' || (*info).type == 'h')  {
+		printf("%d\n", *info->isEnd);
+		while(*info->isEnd == 0) {
+			if(*info->reset){
+				reset(&test);
+				*info->reset = 0;
+			}
+			else{
+				int newX = *info->x;
+				int newY = *info->y;
+				/**info->x = -1;
+				*info->y = -1;*/
+				send_instruction_poi(*info->sizeX, *info->sizeY, &test, newX, newY);
+				#ifdef DEBUG
 
 				if(timerBegin == 1 || ((*info->x != (*info->sizeX / 2)) && (*info->y != (*info->sizeY / 2)))){
 					timerBegin = 1;
@@ -340,12 +396,49 @@ void* launch_follow(void* info_void){
 				else{
 					temps_start = clock();
 				}
-			#endif
-		}
+				#endif
+			}
 
+		}
+	}
+	else {
+		printf("%d\n", *info->isEnd);
+		while(*info->isEnd == 0) {
+			if(*info->reset){
+				reset(&test);
+				*info->reset = 0;
+			}
+			else{
+				int newX = *info->x;
+				int newY = *info->y;
+				/**info->x = -1;
+				*info->y = -1;*/
+				send_instruction_color(*info->sizeX, *info->sizeY, &test, newX, newY);
+				#ifdef DEBUG
+
+				if(timerBegin == 1 || ((*info->x != (*info->sizeX / 2)) && (*info->y != (*info->sizeY / 2)))){
+					timerBegin = 1;
+					temps =clock() - temps_start;
+					actu = (temps / (double) CLOCKS_PER_SEC) * 100;
+					printf("temps actuel : %lf \n", (double) actu);
+
+					tabWr[(int) actu] = *info->x;
+					tabWu[(int) actu] = *info->y;
+					printf("ajout de %d a %d dizaine de milisecondes \n", tabWr[(int) actu], (int) actu);
+					if(actu >= SIZE_MAX_CSV){
+						*info->isEnd = 1;
+					}
+				}
+				else{
+					temps_start = clock();
+				}
+				#endif
+			}
+
+		}
 	}
 	#ifdef DEBUG
-		writeInCsv(tabWr,tabWu,f);
+	writeInCsv(tabWr,tabWu,f);
 	#endif
 	reset(&test);
 
