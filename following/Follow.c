@@ -65,7 +65,7 @@ void writeOnFile(FILE * fichier, char* texte){
 	fputs(texte, fichier);
 }
 
-void send_instruction(int taille_ecran_x, int taille_ecran_y, Serial_com* sc, int x, int y)
+void send_instruction(int taille_ecran_x, int taille_ecran_y, Serial_com* sc, int x, int y, char type)
 {
 
 	if((x != -1) || (y != -1)){
@@ -89,10 +89,16 @@ void send_instruction(int taille_ecran_x, int taille_ecran_y, Serial_com* sc, in
 		char angle_x;
 		char angle_y;
 
-
 		//calcul du delta
-		delta_x = centre_x - x;
-		delta_y = centre_y - y;
+		if((type != 'g')&&(type != 'h')){
+			delta_x = centre_x - x;
+			delta_y = centre_y - y;
+		}
+
+		if((type == 'g')||(type == 'h')){
+			delta_x = x;
+			delta_y = y;
+		}
 
 		// delta = distance entre barycentre et centre
 		delta = (sqrt((delta_x * delta_x) + (delta_y * delta_y)));
@@ -103,26 +109,56 @@ void send_instruction(int taille_ecran_x, int taille_ecran_y, Serial_com* sc, in
 
 
 		//calcul de la commande à envoyer
-		if(delta_x > TOLERANCE_CENTRE){
-			angle_x = '+';
-		}
-		else if(delta_x < -TOLERANCE_CENTRE){
-			angle_x = '-';
-		}
-		else{
-			angle_x = '0';
+
+		if((type != 'g')&&(type != 'h')){
+
+			if(delta_x > TOLERANCE_CENTRE){
+				angle_x = '+';
+			}
+			else if(delta_x < -TOLERANCE_CENTRE){
+				angle_x = '-';
+			}
+			else{
+				angle_x = '0';
+			}
+
+			if(delta_y > TOLERANCE_CENTRE){
+				angle_y = 'p';
+			}
+			else if(delta_y < -TOLERANCE_CENTRE){
+				angle_y = 'm';
+			}
+			else{
+				angle_y = 'n';
+			}
+
 		}
 
-		if(delta_y > TOLERANCE_CENTRE){
-			angle_y = 'p';
-		}
-		else if(delta_y < -TOLERANCE_CENTRE){
-			angle_y = 'm';
-		}
-		else{
-			angle_y = 'n';
-		}
+                if((type == 'g')||(type == 'h')){
+			if(delta_x > 0){
+                                angle_x = '+';
+                        }
+                        else if(delta_x < 0){
+                                angle_x = '-';
+                        }
+                        else{
+                                angle_x = '0';
+                        }
 
+                        if(delta_y > 0){
+                                angle_y = 'p';
+                        }
+                        else if(delta_y < 0){
+                                angle_y = 'm';
+                        }
+                        else{
+                                angle_y = 'n';
+                        }
+
+
+
+
+		}
 		tcflush(sc->fd, TCIFLUSH);
 
 		if((angle_x != '0') || (angle_y != 'n')){
@@ -285,7 +321,7 @@ void* launch_follow(void* info_void){
 			int newY = *info->y;
 			/**info->x = -1;
 			*info->y = -1;*/
-			send_instruction(*info->sizeX, *info->sizeY, &test, newX, newY);
+			send_instruction(*info->sizeX, *info->sizeY, &test, newX, newY, (*info).type);
 			#ifdef DEBUG
 
 				if(timerBegin == 1 || ((*info->x != (*info->sizeX / 2)) && (*info->y != (*info->sizeY / 2)))){
